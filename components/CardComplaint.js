@@ -9,10 +9,6 @@ import CardActions from '@material-ui/core/CardActions';
 import { addComplaint, acceptComplaint, deleteComplaint} from '../src/gql/complaint'
 import { bindActionCreators } from 'redux'
 import * as mini_dialogActions from '../redux/actions/mini_dialog'
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 import Confirmation from './dialog/Confirmation';
 import { pdDDMMYYHHMM } from '../src/lib'
