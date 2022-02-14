@@ -1,0 +1,6 @@
+[{
+        "relation": ["delegate_permission/common.handle_all_urls"],
+        "target" : { "namespace": "android_app", "package_name": "kg.opus.twa",
+                     "sha256_cert_fingerprints": ["12:83:36:66:1A:7A:06:19:92:D7:0A:0C:2D:80:3B:A7:05:25:2D:29:81:D4:DA:EC:29:48:77:29:F0:B5:B3:BE"] }
+      }
+]

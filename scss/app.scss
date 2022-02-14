@@ -1,0 +1,138 @@
+@import "value";
+
+h3{
+  margin: 0
+}
+
+body{
+}
+
+html{
+}
+
+.count{
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5); /* Параметры тени */
+  background: #fff;
+  position: fixed;
+  left: 10px;
+  z-index: 1300;
+  bottom: 70px;
+  font-size: 12px;
+  font-weight: bold;
+  @media screen and (min-width: $break-small) {
+    left: calc(50vw - 390px);
+  }
+}
+
+.fab{
+  position: fixed !important;
+  bottom: 76px;
+  right: 20px;
+  @media screen and (min-width: $break-small) {
+    right: calc(50vw - 380px);
+  }
+}
+
+.App{
+  //background: #FBFBFB !important;
+  background: rgb(55,139,111);
+  background: linear-gradient(135deg, rgba(55,139,111,1) 22%, rgba(25,237,116,1) 80%);
+  width: 100vw;
+  height: 100vh;
+  font-family: 'Roboto', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.App-body {
+  position: relative;
+  overflow: auto !important;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: $bottom-navigation;
+  height: 100%;
+  width: 100%;
+  max-width: 800px;
+  background: #F5F5F5 !important;
+}
+
+.App-body::-webkit-scrollbar {
+  display: none
+}
+
+a {
+  text-decoration: none;
+  color: #00C853;
+}
+
+.load {
+  background-color: rgba(0,0,0,0.1);
+  z-index: 2147483647;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center
+}
+
+.SwipeDiv {
+  min-height: calc(100vh - 70px)
+}
+
+.BottomNavigation {
+  max-width: 800px;
+  z-index: 1201;
+  width: 100%;
+  bottom: 0;
+  position: fixed;
+  border-top: 1px solid #aeaeae;
+  background: white;
+  overflow: hidden;
+}
+
+.SearchField {
+  width: calc(100% - 20px);
+  margin: 10px;
+}
+.Search {
+  width: calc(100% - 20px);
+  max-width: 780px;
+}
+.SearchDiv {
+  z-index: 1201;
+  width: 100%;
+  padding-top: 10px;
+  max-width: 800px;
+  background: #F5F5F5;
+  top: 0;
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center
+}
+.BackBarDiv {
+  z-index: 1201;
+  width: 100%;
+  max-width: 800px;
+  top: 0;
+  position: fixed;
+  display: flex;
+  align-items: center
+}
+.BackBarTitle {
+  text-overflow: ellipsis;
+  font-family: 'Roboto', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
+  align-items: center;
+  height: 20px;
+}
