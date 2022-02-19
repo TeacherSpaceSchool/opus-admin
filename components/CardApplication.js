@@ -49,7 +49,7 @@ const CardApplication = React.memo((props) => {
                         element.approvedUser&&profile.role==='admin'?
                             <div className={classesCard.row}>
                                 <div className={classesCard.nameField}>Принял:&nbsp;</div>
-                                <div className={classesCard.value}>{`${element.approvedUser.role}${element.approvedUser.name?` ${element.approvedUser.name}`:''}`}</div>
+                                <div className={classesCard.value}>{`${element.approvedUser.role} ${element.approvedUser.name?` ${element.approvedUser.name}`:''}`}</div>
                             </div>
                             :
                             null

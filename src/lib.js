@@ -154,6 +154,12 @@ export const pdtDatePicker = (date) =>
     date = `${date.getFullYear()}-${date.getMonth()<9?'0':''}${date.getMonth()+1}-${date.getDate()<10?'0':''}${date.getDate()}`
     return date
 }
+export const pdtDatePickerTime = (date) =>
+{
+    date = date?new Date(date):new Date()
+    date = `${date.getFullYear()}-${date.getMonth()<9?'0':''}${date.getMonth()+1}-${date.getDate()<10?'0':''}${date.getDate()}T${date.getHours()<10?'0':''}${date.getHours()}:${date.getMinutes()<10?'0':''}${date.getMinutes()}`
+    return date
+}
 export const pdHHMM = (date) =>
 {
     date = date?new Date(date):new Date()

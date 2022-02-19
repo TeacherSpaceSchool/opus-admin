@@ -25,7 +25,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Router from 'next/router'
 import { useRouter } from 'next/router';
-import { pdDDMMYYHHMM, inputInt, checkInt } from '../../src/lib'
+import { pdDDMMYYHHMM, inputInt, checkInt, pdtDatePickerTime } from '../../src/lib'
 import Link from 'next/link';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import Tabs from '@material-ui/core/Tabs';
@@ -120,8 +120,8 @@ const Order = React.memo((props) => {
     let [address, setAddress] = useState(data.object&&data.object.address?data.object.address:'');
     let [apartment, setApartment] = useState(data.object&&data.object.apartment?data.object.apartment:'');
     let [geo, setGeo] = useState(data.object&&data.object.geo?data.object.geo:[42.8700000, 74.5900000]);
-    let [dateStart, setDateStart] = useState(data.object&&data.object.dateStart?data.object.dateStart:null);
-    let [dateEnd, setDateEnd] = useState(data.object&&data.object.dateEnd?data.object.dateEnd:null);
+    let [dateStart, setDateStart] = useState(data.object&&data.object.dateStart?pdtDatePickerTime(data.object.dateStart):null);
+    let [dateEnd, setDateEnd] = useState(data.object&&data.object.dateEnd?pdtDatePickerTime(data.object.dateEnd):null);
     let [price, setPrice] = useState(data.object&&data.object.price?data.object.price:'');
     let [urgency, setUrgency] = useState(data.object&&data.object.urgency?data.object.urgency:false);
     let imageRef = useRef(null);
@@ -651,6 +651,7 @@ const Order = React.memo((props) => {
                                                     <IconButton onClick={()=>Router.back()}>
                                                         <ArrowBackIcon/>
                                                     </IconButton>
+                                                    <div style={{width: '100%'}}/>
                                                     {
                                                         data.object.chat?
                                                             <Link
@@ -664,7 +665,6 @@ const Order = React.memo((props) => {
                                                             :
                                                             null
                                                     }
-                                                    <div style={{width: '100%'}}/>
                                                     {
                                                         isMobileApp?
                                                             data.object.executor?

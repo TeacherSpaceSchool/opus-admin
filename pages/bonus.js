@@ -86,9 +86,9 @@ const User = React.memo((props) => {
                                     {data.bonus.count}
                                 </div>
                                 <Button style={{width: '100%'}} onClick={async()=>{
-                                    window.open('/static/application.pdf','_blank')
+                                    window.open('/static/bonus.pdf','_blank')
                                 }} color='primary'>
-                                    Как использовать бонусы?
+                                    Как получать бонусы?
                                 </Button>
                             </CardContent>
                         </Card>

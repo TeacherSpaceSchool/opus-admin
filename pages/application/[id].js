@@ -214,7 +214,7 @@ const Application = React.memo((props) => {
                                                                 :
                                                                 <div className={classesPage.row}>
                                                                     <div className={classesPage.nameField}>Принял:&nbsp;</div>
-                                                                    <div className={classesPage.value}>{`${data.object.approvedUser.role}${data.object.approvedUser.name?data.object.approvedUser.name:''}`}</div>
+                                                                    <div className={classesPage.value}>{`${data.object.approvedUser.role} ${data.object.approvedUser.name?data.object.approvedUser.name:''}`}</div>
                                                                 </div>
                                                             :
                                                             null
