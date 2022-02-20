@@ -127,7 +127,7 @@ const CardCategory = React.memo((props) => {
                                     if(image)editElement.image = image
                                     const action = async() => {
                                         if(await setCategory(editElement)!=='OK')
-                                            showSnackBar('Ошибка')
+                                            showSnackBar('Ошибка', 'error')
                                     }
                                     setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                     showMiniDialog(true)

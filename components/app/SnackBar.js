@@ -2,32 +2,27 @@ import React from 'react';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import Snackbar from '@material-ui/core/Snackbar';
-import Button from '@material-ui/core/Button';
 import * as snackbarActions from '../../redux/actions/snackbar'
+import { Alert } from '@material-ui/lab';
 
 const MyDialog =  React.memo(
     (props) =>{
-        const { title, show } = props.snackbar;
+        const { title, show, type } = props.snackbar;
         const { closeSnackBar } = props.snackbarActions;
         return (
             <Snackbar
                 anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'left',
+                    vertical: 'top',
+                    horizontal: 'center',
                 }}
                 open={show}
-                autoHideDuration={5000}
+                autoHideDuration={6000}
                 onClose={closeSnackBar}
-                ContentProps={{
-                    'aria-describedby': 'message-id',
-                }}
-                message={<span id="message-id">{title}</span>}
-                action={[
-                    <Button key="undo" color="secondary" size="small" onClick={closeSnackBar}>
-                        Закрыть
-                    </Button>
-                ]}
-            />
+            >
+                <Alert variant='filled' severity={type?type:'warning'} onClose={closeSnackBar}>
+                    {title.toUpperCase()}
+                </Alert>
+            </Snackbar>
         );
     }
 )

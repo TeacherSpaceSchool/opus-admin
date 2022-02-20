@@ -64,7 +64,7 @@ const App = React.memo(props => {
     useEffect( ()=>{
         (async ()=>{
             if(process.browser) {
-                window.addEventListener('offline', ()=>{showSnackBar('Нет подключения к Интернету')})
+                window.addEventListener('offline', ()=>{showSnackBar('Нет подключения к Интернету', 'error')})
                 if(profile.role) {
                     if (navigator.geolocation) {
                         navigator.geolocation.getCurrentPosition((position) => {

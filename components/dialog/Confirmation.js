@@ -26,7 +26,7 @@ const Confirmation =  React.memo(
                             await showLoad(false)
                         }  catch (err) {
                             console.error(err)
-                            showSnackBar('Ошибка')
+                            showSnackBar('Ошибка', 'error')
                         }
                     }}>
                         ДА

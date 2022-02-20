@@ -144,7 +144,7 @@ const CardSubcategory = React.memo((props) => {
                                 if(searchWords&&searchWords!==element.searchWords)editElement.searchWords = searchWords
                                 const action = async() => {
                                     if(await setSubcategory(editElement)!=='OK')
-                                        showSnackBar('Ошибка')
+                                        showSnackBar('Ошибка', 'error')
                                 }
                                 setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                 showMiniDialog(true)

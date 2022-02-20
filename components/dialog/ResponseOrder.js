@@ -68,7 +68,7 @@ const ResponseOrder =  React.memo(
                         let _responseOrder = await responseOrder({_id, message})
                         if(_responseOrder==='OK') {
                             setShowResponseOrder(false)
-                            showSnackBar('Ответ отправлен')
+                            showSnackBar('Ответ отправлен', 'success')
                         }
                        showMiniDialog(false);
                     }} className={classes.button}>

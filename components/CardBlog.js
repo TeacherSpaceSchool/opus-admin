@@ -65,7 +65,7 @@ const CardBlog = React.memo((props) => {
                                             setList(_list)
                                         }
                                         else
-                                            showSnackBar('Ошибка')
+                                            showSnackBar('Ошибка', 'error')
                                     }
                                     setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                     showMiniDialog(true)

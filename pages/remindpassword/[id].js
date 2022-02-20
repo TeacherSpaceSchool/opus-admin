@@ -113,7 +113,7 @@ const RemindPassword = React.memo((props) => {
                                     Router.push('/')
                                 } else {
                                     setError(true)
-                                    showSnackBar('Ошибка')
+                                    showSnackBar('Ошибка', 'error')
                                 }
                             }
                             setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
