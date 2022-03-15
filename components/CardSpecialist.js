@@ -18,10 +18,15 @@ const CardSpecialist = React.memo((props) => {
     let [specializations, setSpecializations] = useState('');
     useEffect(()=>{
 
-        let length = element.specializations.length-1
+        let subcategories = []
         for (let i = 0; i < element.specializations.length; i++) {
-            if(subcategoriesById[element.specializations[i].subcategory])
-                specializations += `${subcategoriesById[element.specializations[i].subcategory]}${i!==length?', ':''}`
+            if(subcategoriesById[element.specializations[i].subcategory]&&element.specializations[i].end>new Date()&&element.specializations[i].enable)
+                subcategories.push(subcategoriesById[element.specializations[i].subcategory])
+        }
+
+        let length = subcategories.length-1
+        for (let i = 0; i < subcategories.length; i++) {
+            specializations += `${subcategories[i]}${i!==length?', ':''}`
         }
         setSpecializations(specializations)
 

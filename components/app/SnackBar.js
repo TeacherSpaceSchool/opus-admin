@@ -20,7 +20,7 @@ const MyDialog =  React.memo(
                 onClose={closeSnackBar}
             >
                 <Alert variant='filled' severity={type?type:'warning'} onClose={closeSnackBar}>
-                    {title.toUpperCase()}
+                    {title?title.toUpperCase():'Ошибка'}
                 </Alert>
             </Snackbar>
         );
