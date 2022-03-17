@@ -1,6 +1,13 @@
-[{
-        "relation": ["delegate_permission/common.handle_all_urls"],
-        "target" : { "namespace": "android_app", "package_name": "kg.opus.twa",
-                     "sha256_cert_fingerprints": ["12:83:36:66:1A:7A:06:19:92:D7:0A:0C:2D:80:3B:A7:05:25:2D:29:81:D4:DA:EC:29:48:77:29:F0:B5:B3:BE"] }
-      }
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target" : {
+      "namespace": "android_app",
+      "package_name": "kg.opus.twa",
+      "sha256_cert_fingerprints": [
+        "12:83:36:66:1A:7A:06:19:92:D7:0A:0C:2D:80:3B:A7:05:25:2D:29:81:D4:DA:EC:29:48:77:29:F0:B5:B3:BE",
+        "E6:29:D9:3E:C6:71:67:6F:26:64:A7:EB:DD:01:B2:8E:DA:5E:FA:4A:3D:9C:1B:53:93:68:1C:9C:2C:F2:EA:D5"
+      ]
+    }
+  }
 ]
