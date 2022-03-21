@@ -163,8 +163,8 @@ const Order = React.memo((props) => {
     }, [process.browser]);
     useEffect(() => {
         if(!initialRender.current) {
-            if (subcategory && subcategory.searchWords && subcategory.searchWords.length)
-                setQuickTitles(subcategory.searchWords.split(', '))
+            if (subcategory && subcategory.quickTitles && subcategory.quickTitles.length)
+                setQuickTitles(subcategory.quickTitles.split(', '))
             else
                 setQuickTitles([])
         }
@@ -1151,8 +1151,8 @@ Order.getInitialProps = async function(ctx) {
     let quickTitles = []
     if(ctx.query.subcategory) {
         let subcategory = await getSubcategory({_id: ctx.query.subcategory}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
-        if(subcategory&&subcategory.searchWords&&subcategory.searchWords.length)
-            quickTitles = subcategory.searchWords.split(', ')
+        if(subcategory&&subcategory.quickTitles&&subcategory.quickTitles.length)
+            quickTitles = subcategory.quickTitles.split(', ')
     }
     return {
         data: {

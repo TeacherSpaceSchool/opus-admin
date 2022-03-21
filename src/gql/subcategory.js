@@ -36,6 +36,7 @@ export const getSubcategories = async({search, skip, category, sort}, client)=>{
                             searchWords
                             autoApplication
                             priority
+                            quickTitles
                         }
                     }`,
             })
@@ -64,6 +65,7 @@ export const getSubcategoriesBySpecialist = async(specialist, client)=>{
                             searchWords
                             autoApplication
                             priority
+                            quickTitles
                         }
                     }`,
             })
@@ -109,6 +111,7 @@ export const getSubcategory = async({_id}, client)=>{
                             searchWords
                             autoApplication
                             priority
+                            quickTitles
                         }
                     }`,
             })
@@ -139,8 +142,8 @@ export const addSubcategory = async(element)=>{
         let res = await client.mutate({
             variables: element,
             mutation : gql`
-                    mutation ($name: String!, $image: Upload!, $category: ID!, $searchWords: String!, $priority: Int, $autoApplication: Boolean!) {
-                        addSubcategory(name: $name, image: $image, category: $category, searchWords: $searchWords, priority: $priority, autoApplication: $autoApplication) {
+                    mutation ($name: String!, $quickTitles: String!, $image: Upload!, $category: ID!, $searchWords: String!, $priority: Int, $autoApplication: Boolean!) {
+                        addSubcategory(name: $name, image: $image, quickTitles: $quickTitles, category: $category, searchWords: $searchWords, priority: $priority, autoApplication: $autoApplication) {
                             _id
                             createdAt
                             name
@@ -150,6 +153,7 @@ export const addSubcategory = async(element)=>{
                             category {_id name}
                             searchWords
                             autoApplication
+                            quickTitles
                         }
                     }`})
         return res.data.addSubcategory
@@ -164,8 +168,8 @@ export const setSubcategory = async(element)=>{
         let res = await client.mutate({
             variables: element,
             mutation : gql`
-                    mutation ($_id: ID!, $status: String, $name: String, $image: Upload, $searchWords: String, $priority: Int, $autoApplication: Boolean) {
-                        setSubcategory(_id: $_id, status: $status, name: $name, image: $image, searchWords: $searchWords, priority: $priority, autoApplication: $autoApplication) 
+                    mutation ($_id: ID!, $status: String, $quickTitles: String, $name: String, $image: Upload, $searchWords: String, $priority: Int, $autoApplication: Boolean) {
+                        setSubcategory(_id: $_id, status: $status, quickTitles: $quickTitles, name: $name, image: $image, searchWords: $searchWords, priority: $priority, autoApplication: $autoApplication) 
                     }`})
         return res.data.setSubcategory
     } catch(err){

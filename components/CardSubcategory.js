@@ -49,6 +49,11 @@ const CardSubcategory = React.memo((props) => {
         if(!event.target.value.includes('\n'))
             setSearchWords(event.target.value)
     };
+    let [quickTitles, setQuickTitles] = useState(element?element.quickTitles:'');
+    let handleQuickTitles =  (event) => {
+        if(!event.target.value.includes('\n'))
+            setQuickTitles(event.target.value)
+    };
     return (
         profile.role==='admin'?
             <Card className={isMobileApp?classesCard.cardM:classesCard.cardD}>
@@ -94,6 +99,16 @@ const CardSubcategory = React.memo((props) => {
                             }}
                         />
                         <TextField
+                            multiline
+                            label='Быстрые задачи'
+                            value={quickTitles}
+                            className={classesCard.input}
+                            onChange={handleQuickTitles}
+                            inputProps={{
+                                'aria-label': 'description',
+                            }}
+                        />
+                        <TextField
                             label='Приоритет'
                             value={priority}
                             className={classesCard.input}
@@ -113,10 +128,11 @@ const CardSubcategory = React.memo((props) => {
                                     setName('')
                                     setAutoApplication(false)
                                     setSearchWords('')
+                                    setQuickTitles('')
                                     setPreview('/static/add.png')
                                     setPriority(0)
                                     const action = async() => {
-                                        let res = await addSubcategory({name, priority: checkInt(priority), image, category, searchWords, autoApplication})
+                                        let res = await addSubcategory({name, priority: checkInt(priority), image, category, searchWords, quickTitles, autoApplication})
                                         setList([res, ...list])
                                     }
                                     setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
@@ -142,6 +158,7 @@ const CardSubcategory = React.memo((props) => {
                                 if(image)editElement.image = image
                                 if(priority!=element.priority)editElement.priority = checkInt(priority)
                                 if(searchWords&&searchWords!==element.searchWords)editElement.searchWords = searchWords
+                                if(quickTitles&&quickTitles!==element.quickTitles)editElement.quickTitles = quickTitles
                                 const action = async() => {
                                     if(await setSubcategory(editElement)!=='OK')
                                         showSnackBar('Ошибка', 'error')
