@@ -368,7 +368,7 @@ const Order = React.memo((props) => {
                                                     </FormControl>
                                                     {
                                                         quickTitles.length?
-                                                            <div className={classesOrder.row}>
+                                                            <div className={classesOrder.rowPrice}>
                                                                 {
                                                                     quickTitles.map((element, idx)=> {
                                                                         return(

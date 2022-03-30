@@ -152,6 +152,7 @@ const Sign =  React.memo(
                         null
                     }
                     <div style={{width}} className={classes.message} onClick={()=>{setType('remind')}}>Восстановить пароль</div>
+                    <div>Нажимая «Войти» вы принимаете положения документов <Link href='/privacy'><a><b onClick={()=>{showMiniDialog(false);}}>«Соглашение об использовании»</b></a></Link>.</div>
                     <br/>
                     <div>
                         <Button variant='contained' color='primary' onClick={()=>{
@@ -251,6 +252,7 @@ const Sign =  React.memo(
                             :
                             null
                         }
+                        <div>Нажимая «Зарегистрироваться» вы принимаете положения документов <Link href='/privacy'><a><b onClick={()=>{showMiniDialog(false);}}>«Соглашение об использовании»</b></a></Link>.</div>
                         <br/>
                         <div>
                             <Button variant='contained' color='primary' onClick={()=>{if(!errorPass&&!errorPassRepeat&&nameReg&&validPhoneLogin(loginReg))signup({name: nameReg, login: loginReg, password: passReg, code: codeReg})}} className={classes.button}>

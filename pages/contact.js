@@ -27,6 +27,7 @@ import { validPhoneLogin, validEmail } from '../src/lib'
 import Router from 'next/router'
 import dynamic from 'next/dynamic'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import Link from 'next/link';
 const Geo = dynamic(import('../components/dialog/Geo'), { ssr: false });
 
 const Contact = React.memo((props) => {
@@ -448,6 +449,19 @@ const Contact = React.memo((props) => {
                                         :
                                         null
                                 }
+                                <div className={classes.row}>
+                                    <div className={classes.nameField} style={{width: 100}}>
+                                        Документы:&nbsp;
+                                    </div>
+                                    <Link href='/privacy'>
+                                        <a>
+                                            <div className={classes.value}>
+                                                Соглашение об использовании интернет-ресурса Opus.kg
+                                            </div>
+                                        </a>
+                                    </Link>
+                                </div>
+                                <br/>
                                 {
                                     info?
                                         <div className={classes.info}>
