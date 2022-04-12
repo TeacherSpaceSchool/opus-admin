@@ -19,15 +19,15 @@ const Confirmation =  React.memo(
             action?
                 <center className={classes.line}>
                     <Button variant='outlined' size='large' color='primary' style={{marginRight: 20}} onClick={async()=>{
+                        await showMiniDialog(false)
+                        await showLoad(true)
                         try {
-                            await showMiniDialog(false)
-                            await showLoad(true)
                             await action()
-                            await showLoad(false)
                         }  catch (err) {
                             console.error(err)
                             showSnackBar('Ошибка', 'error')
                         }
+                        await showLoad(false)
                     }}>
                         ДА
                     </Button>

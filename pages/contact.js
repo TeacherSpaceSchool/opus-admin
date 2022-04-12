@@ -105,7 +105,7 @@ const Contact = React.memo((props) => {
                 <meta property='og:url' content={`${urlMain}/contact`} />
                 <link rel='canonical' href={`${urlMain}/contact`}/>
             </Head>
-            <Card className={classes.page}>
+            <Card className={classes.page} style={{marginBottom: 60}}>
                 <IconButton className={classes.backArrow} onClick={()=>Router.back()}>
                     <ArrowBackIcon/>
                 </IconButton>

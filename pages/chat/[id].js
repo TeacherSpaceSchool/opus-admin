@@ -135,6 +135,9 @@ const Chat = React.memo((props) => {
                                                                 alt={who.name}
                                                             />
                                                             :
+                                                            element.type==='link'?
+                                                                <a href={element.text}>{element.text}</a>
+                                                                :
                                                             null
                                                 }
                                                 <div className={classesChat.timeRightBubleChat}>
@@ -161,7 +164,10 @@ const Chat = React.memo((props) => {
                                                                 alt={who.name}
                                                             />
                                                             :
-                                                            null
+                                                            element.type==='link'?
+                                                                <a href={element.text}>{element.text}</a>
+                                                                :
+                                                                null
                                                 }
                                                 <div className={classesChat.timeLeftBubleChat}>
                                                     {today?pdHHMM(element.createdAt):pdDDMMYYHHMM(element.createdAt)}

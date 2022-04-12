@@ -28,8 +28,8 @@ export function signup(payload) {
             let result = await client.mutate({
                 variables: payload,
                 mutation : gql`
-                    mutation ($login: String!, $name: String!, $password: String!, $code: String) {
-                        signupuser(login: $login, name: $name, password: $password, code: $code) {
+                    mutation ($login: String!, $name: String!, $password: String!, $code: String, $isApple: Boolean) {
+                        signupuser(login: $login, name: $name, password: $password, code: $code, isApple: $isApple) {
                             role
                             status
                             login

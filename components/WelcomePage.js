@@ -47,7 +47,7 @@ const WelcomePage = React.memo(() => {
                             <p style={{textAlign: 'center'}}><img alt='' src={`${urlMain}/static/opus GOTOVYI.png`} style={{height: '120px', width: '120px'}} /></p>
                             <p style={{textAlign: 'center', marginTop: 5, marginBottom: 5}}><span style={{fontFamily: 'Roboto', fontSize: '1.25rem'}}><strong>Салам</strong></span></p>
                             <p style={{textAlign: 'center', marginTop: 2, marginBottom: 2}}><span style={{fontFamily: 'Roboto', fontSize: '1rem'}}><span style={{color: '#000000'}}>OPUS сервиси менен ар кандай</span></span></p>
-                            <p style={{textAlign: 'center', marginTop: 2, marginBottom: 2}}><span style={{fontFamily: 'Roboto', fontSize: '1rem'}}>татаал меселерер чечилет!</span></p>
+                            <p style={{textAlign: 'center', marginTop: 2, marginBottom: 2}}><span style={{fontFamily: 'Roboto', fontSize: '1rem'}}>татаал маселелер чечилет!</span></p>
                             <p style={{textAlign: 'center', height: 12}}><span style={{fontSize: '16px'}}><span style={{color: '#999999'}}>*****</span></span></p>
                             <p style={{textAlign: 'center', marginTop: 5, marginBottom: 5}}><span style={{fontFamily: 'Roboto', fontSize: '1.25rem'}}><strong>Привет</strong></span></p>
                             <p style={{textAlign: 'center', marginTop: 2, marginBottom: 2}}><span style={{fontFamily: 'Roboto', fontSize: '1rem'}}>В сервисе OPUS, на каждую </span></p>

@@ -40,7 +40,7 @@ const Sign =  React.memo(
             setHide(!hide)
         };
         const { error } = props.user;
-        const { isMobileApp } = props.app;
+        const { isMobileApp, isApple } = props.app;
         const { showMiniDialog } = props.mini_dialogActions;
         const { signin, signup } = props.userActions;
         const { classes } = props;
@@ -178,7 +178,6 @@ const Sign =  React.memo(
                             onChange={handleNameReg}
                             style={{width}}
                         />
-                        <br/>
                         <TextField
                             error={!validPhoneLogin(loginReg)}
                             id='standard-search'
@@ -227,7 +226,6 @@ const Sign =  React.memo(
                                 }
                             />
                         </FormControl>
-                        <br/>
                         <TextField
                             label='Промокод (если есть)'
                             className={classes.textField}
@@ -255,7 +253,7 @@ const Sign =  React.memo(
                         <div>Нажимая «Зарегистрироваться» вы принимаете положения документов <Link href='/privacy'><a><b onClick={()=>{showMiniDialog(false);}}>«Соглашение об использовании»</b></a></Link>.</div>
                         <br/>
                         <div>
-                            <Button variant='contained' color='primary' onClick={()=>{if(!errorPass&&!errorPassRepeat&&nameReg&&validPhoneLogin(loginReg))signup({name: nameReg, login: loginReg, password: passReg, code: codeReg})}} className={classes.button}>
+                            <Button variant='contained' color='primary' onClick={()=>{if(!errorPass&&!errorPassRepeat&&nameReg&&validPhoneLogin(loginReg))signup({name: nameReg, login: loginReg, password: passReg, code: codeReg, isApple})}} className={classes.button}>
                                 Зарегистрироваться
                             </Button>
                             <Button variant='contained' color='secondary' onClick={()=>{showMiniDialog(false);}} className={classes.button}>

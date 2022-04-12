@@ -78,7 +78,7 @@ const MyBottomNavigation = React.memo((props) => {
                 else
                     Router.push('/')
             }}/>
-            <BottomNavigationAction label='Заказы' icon={<Badge color='secondary' variant='dot' invisible={!unreadBN.order}><ViewListIcon /></Badge>}
+            <BottomNavigationAction label='Заказы' icon={<Badge color='secondary' variant='dot' invisible={profile.role==='admin'||!unreadBN.order}><ViewListIcon /></Badge>}
                                     onClick={()=>{
                                         if(router.asPath==='/order/new') {
                                             const action = async() => Router.push('/orders')
@@ -101,7 +101,7 @@ const MyBottomNavigation = React.memo((props) => {
                                     }}
             />
             <BottomNavigationAction label={profile.role==='admin'?'Уведомления':'Чаты'}
-                                    icon={<Badge color='secondary' variant='dot' invisible={!unreadBN.notifications0&&!unreadBN.notifications1}>{profile.role==='admin'?<NotificationsIcon/>:<QuestionAnswerIcon/>}</Badge>}
+                                    icon={<Badge color='secondary' variant='dot' invisible={profile.role==='admin'||!unreadBN.notifications0&&!unreadBN.notifications1}>{profile.role==='admin'?<NotificationsIcon/>:<QuestionAnswerIcon/>}</Badge>}
                                     onClick={()=>{
                                         if(authenticated) {
                                             if (router.asPath === '/order/new') {

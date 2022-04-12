@@ -2,7 +2,6 @@ import Head from 'next/head';
 import React, { useState, useEffect, useRef } from 'react';
 import App from '../layouts/App';
 import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
 import { getPushNotifications, getPushNotificationsCount } from '../src/gql/pushNotification'
 import pageListStyle from '../src/styleMUI/list'
 import CardPushNotification from '../components/CardPushNotification'
