@@ -16,12 +16,15 @@ import Link from 'next/link';
 import styleUser from '../src/styleMUI/other/user'
 import PhoneIcon from '@material-ui/icons/Phone';
 import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
+import Router from 'next/router'
+import { useRouter } from 'next/router';
 const date = new Date()
 
 const CardNotification = React.memo((props) => {
     const classesCard = cardStyle();
     const classesChat = chatStyle();
     let { element, list, setList } = props;
+    const router = useRouter();
     const classesUser = styleUser();
     const { profile } = props.user;
     const { isMobileApp } = props.app;
@@ -126,6 +129,8 @@ const CardNotification = React.memo((props) => {
                                                             list[i].order.status = 'принят'
                                                     }
                                                     setList([...list])
+                                                    if(router.asPath.includes('order'))
+                                                        Router.reload()
                                                 }
                                             }
                                             setMiniDialog(`Принять${element.type===1?' исполнителя':''}?`, <Confirmation action={action}/>)

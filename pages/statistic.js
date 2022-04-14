@@ -35,7 +35,7 @@ const Statistic = React.memo((props) => {
         setDateType({value: event.target.value, name: event.target.name})
     };
     let [type, setType] = useState({name:'Категории', value: 'category'});
-    const types = [{name:'Категории', value: 'category'}, {name:'Подкатегории', value: 'subcategory'}, {name:'Специалисты', value: 'specialist'}]
+    const types = [{name:'Категории', value: 'category'}, {name:'Подкатегории', value: 'subcategory'}, {name:'Исполнители', value: 'specialist'}]
     let handleType =  (event) => {
         setType({value: event.target.value, name: event.target.name})
     };

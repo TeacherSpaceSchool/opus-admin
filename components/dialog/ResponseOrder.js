@@ -26,7 +26,7 @@ const ResponseOrder =  React.memo(
             <div className={classes.main}>
                 <TextField
                     style={{width: width}}
-                    placeholder='Готов выполнить заказ'
+                    placeholder='Готов(а) выполнить заказ'
                     label='Сообщение'
                     className={classes.textField}
                     margin='normal'
