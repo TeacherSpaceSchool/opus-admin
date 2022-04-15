@@ -161,7 +161,7 @@ const CardReview = React.memo((props) => {
                                 :
                                 <Button onClick={async()=> {
                                     const action = async() => {
-                                        await deleteReview({reiting: rating, uploads, info: text, whom})
+                                        await deleteReview(element._id)
                                         list.splice(idx, 1);
                                         setList([...list])
                                     }

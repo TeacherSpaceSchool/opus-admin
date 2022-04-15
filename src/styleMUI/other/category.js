@@ -90,9 +90,9 @@ export default makeStyles({
     cardAO: {
         position: 'fixed !important',
         bottom: '40px !important',
-        width: '219px !important',
+        width: '222px !important',
         borderRadius: '12px !important',
         marginBottom: '50px  !important',
-        left: 'calc((100vw - 219px) / 2) !important'
+        left: 'calc((100vw - 222px) / 2) !important'
     }
 })

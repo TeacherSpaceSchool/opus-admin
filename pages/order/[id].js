@@ -653,7 +653,7 @@ const Order = React.memo((props) => {
                                                     </IconButton>
                                                     <div style={{width: '100%'}}/>
                                                     {
-                                                        data.object.chat?
+                                                        data.object.chat&&data.object.status==='принят'?
                                                             <Link
                                                                 href={{pathname: '/chat/[id]'}}
                                                                 as={`/chat/${data.object.chat._id}`}
@@ -666,7 +666,7 @@ const Order = React.memo((props) => {
                                                             null
                                                     }
                                                     {
-                                                        isMobileApp?
+                                                        isMobileApp&&['активный', 'принят'].includes(data.object.status)?
                                                             data.object.executor?
                                                                 <a href={`tel:+996${data.object.executor._id!==profile._id?data.object.executor.login:data.object.customer.login}`}>
                                                                     <IconButton>
