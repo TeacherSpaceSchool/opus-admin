@@ -35,12 +35,18 @@ export default async (ctx)=>{
                 if(ctx.store.getState().user.profile.specializations&&ctx.store.getState().user.profile.specializations.length){
                     const now = new Date()
                     let end
+                    let expired
                     for(let i=0; i<ctx.store.getState().user.profile.specializations.length; i++) {
-                        end = new Date(ctx.store.getState().user.profile.specializations[i].end)
-                        end.setDate(end.getDate()-5)
-                        if(end<=now) {
-                            ctx.store.getState().app.expired = true;
-                            break;
+                        if(!ctx.store.getState().app.expired) {
+                            end = new Date(ctx.store.getState().user.profile.specializations[i].end)
+                            expired = (end - now) / 1000 / 60 / 60 / 24
+                            if (expired < 5) {
+                                if(expired < 0)
+                                    ctx.store.getState().app.expired = 'СПЕЦИАЛИЗАЦИЯ ПРОСРОЧЕНА'
+                                else
+                                    ctx.store.getState().app.expired = 'СПЕЦИАЛИЗАЦИЯ СКОРО ЗАКОНЧИТьСЯ'
+                                break;
+                            }
                         }
                     }
                 }

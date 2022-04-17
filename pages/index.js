@@ -23,6 +23,7 @@ import Confirmation from '../components/dialog/Confirmation'
 import { useRouter } from 'next/router';
 import { Alert } from '@material-ui/lab';
 import Snackbar from '@material-ui/core/Snackbar';
+import Router from 'next/router'
 
 const Index = React.memo((props) => {
     const classesPageList = stylePageList();
@@ -172,6 +173,9 @@ const Index = React.memo((props) => {
                                 }}
                                 open={alert}
                                 autoHideDuration={5000}
+                                onClick={()=>{
+                                    Router.push('/notifications')
+                                }}
                                 onClose={closeAlert}>
                                 <Alert severity='success'>
                                     ПОЗДРАВЛЯЕМ, ВЫ УСПЕШНО ПРОШЛИ РЕГИСТРАЦИЮ!

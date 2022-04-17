@@ -288,7 +288,7 @@ const App = React.memo(props => {
                     onClick={()=>{_setExpired(false)}}
                     onClose={()=>{_setExpired(false)}}>
                     <Alert variant='filled' severity='warning'>
-                        СПЕЦИАЛИЗАЦИЯ ПРОСРОЧЕНА
+                        {expired}
                     </Alert>
                 </Snackbar>
             </div>
