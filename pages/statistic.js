@@ -91,30 +91,29 @@ const Statistic = React.memo((props) => {
                                     renderInput={(params) => <TextField {...params} label='Выберите город' />}
                                 />
                                 :
-                                <>
-                                <TextField
-                                    className={classes.input}
-                                    label='Дата начала'
-                                    type='date'
-                                    InputLabelProps={{
-                                        shrink: true,
-                                    }}
-                                    value={dateStart}
-                                    inputProps={{
-                                        'aria-label': 'description',
-                                    }}
-                                    onChange={ event => setDateStart(event.target.value) }
-                                />
-                                <FormControl className={classes.input}>
-                                    <InputLabel>Тип даты</InputLabel>
-                                    <Select value={dateType.value} onChange={handleDateType}>
-                                        {dateTypes.map((element)=>
-                                            <MenuItem key={element.value} value={element.value} ola={element.name}>{element.name}</MenuItem>
-                                        )}
-                                    </Select>
-                                </FormControl>
-                                </>
+                                null
                         }
+                        <TextField
+                            className={classes.input}
+                            label='Дата начала'
+                            type='date'
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            value={dateStart}
+                            inputProps={{
+                                'aria-label': 'description',
+                            }}
+                            onChange={ event => setDateStart(event.target.value) }
+                        />
+                        <FormControl className={classes.input}>
+                            <InputLabel>Тип даты</InputLabel>
+                            <Select value={dateType.value} onChange={handleDateType}>
+                                {dateTypes.map((element)=>
+                                    <MenuItem key={element.value} value={element.value} ola={element.name}>{element.name}</MenuItem>
+                                )}
+                            </Select>
+                        </FormControl>
                         <FormControl className={classes.input}>
                             <InputLabel>Тип данных</InputLabel>
                             <Select value={type.value} onChange={handleType}>

@@ -39,7 +39,7 @@ const CardChat = React.memo((props) => {
                                 <div className={classesChat.nameChat}>
                                     {who.name}
                                 </div>
-                                <div className={classesChat.textChat}>
+                                <div className={classesChat.textChat} style={{ display: '-webkit-box', '-webkit-line-clamp': '5', overflow: 'hidden', '-webkit-box-orient': 'vertical'  }}>
                                     {element.lastMessage?element.lastMessage.type==='text'?element.lastMessage.text:element.lastMessage.type==='image'?'Изображение':'Новый чат':'Новый чат'}
                                 </div>
                             </div>
