@@ -175,7 +175,7 @@ Subcategories.getInitialProps = async function(ctx) {
             list: await getSubcategories({category: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
             count: await getSubcategoriesCount({category: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
             category: await getCategory({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
-            searchWords: await getSearchWordsSubcategories(ctx.req?await getClientGqlSsr(ctx.req):undefined)
+            searchWords: await getSearchWordsSubcategories({category: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
         }
     };
 };

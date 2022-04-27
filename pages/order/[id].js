@@ -713,7 +713,7 @@ const Order = React.memo((props) => {
                                                     {
                                                         images.length?
                                                             <>
-                                                            <div className={classesPage.row}>
+                                                            <div className={classesPage.noteImageList}>
                                                                 {images.map((element, idx)=>
                                                                     <img
                                                                         onClick={() => {
@@ -721,7 +721,7 @@ const Order = React.memo((props) => {
                                                                             setImagesLightbox(images)
                                                                             setIndexLightbox(idx)
                                                                         }}
-                                                                        className={classesOrder.media}
+                                                                        className={classesPage.noteImage}
                                                                         src={element}
                                                                         alt={'Добавить'}
                                                                     />

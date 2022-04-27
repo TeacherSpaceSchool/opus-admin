@@ -1,14 +1,15 @@
 import { gql } from 'apollo-boost';
 import { SingletonApolloClient } from '../singleton/client';
 
-export const getSearchWordsSubcategories = async(client)=>{
+export const getSearchWordsSubcategories = async({ category }, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .query({
+                variables: { category },
                 query: gql`
-                    query {
-                        searchWordsSubcategories
+                    query ($category: ID){
+                        searchWordsSubcategories(category: $category)
                     }`
             })
         return res.data.searchWordsSubcategories
