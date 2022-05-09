@@ -84,7 +84,7 @@ const Subcategories = React.memo((props) => {
                                     <div className={classesOther.row}>
                                         <AccountCircleIcon className={classesOther.icon}/>
                                         <div className={classesOther.title}>
-                                            Профиль
+                                            Личный кабинет
                                         </div>
                                     </div>
                                 </Card>

@@ -347,7 +347,7 @@ const Order = React.memo((props) => {
                                                         <InputLabel
                                                             htmlFor='title'
                                                             error={!name.length}>
-                                                            Задача*
+                                                            Что нужно сделать?*
                                                         </InputLabel>
                                                         <Input
                                                             id='title'
@@ -386,49 +386,11 @@ const Order = React.memo((props) => {
                                                             :
                                                             null
                                                     }
-                                                    <TextField
-                                                        multiline={true}
-                                                        label='Информация'
-                                                        value={info}
-                                                        className={classesPage.input}
-                                                        onChange={(event)=>{setInfo(event.target.value)}}
-                                                        inputProps={{
-                                                            'aria-label': 'description',
-                                                        }}
-                                                    />
-                                                    <br/>
-                                                    <div className={classesPage.row}>
-                                                        <div className={classesPage.nameField}>Изображения:&nbsp;&nbsp;</div>
-                                                        <div className={classesPage.noteImageList}>
-                                                            {
-                                                                edit?
-                                                                    <img className={classesPage.noteImage} src='/static/add.png' onClick={()=>{imageRef.current.click()}} />
-                                                                    :
-                                                                    null
-                                                            }
-                                                            {images.map((element, idx)=> <div key={`noteImageDiv${idx}`} className={classesPage.noteImageDiv}>
-                                                                <img className={classesPage.noteImage} src={element} onClick={()=>{
-                                                                    setShowLightbox(true)
-                                                                    setImagesLightbox(images)
-                                                                    setIndexLightbox(idx)
-                                                                }}/>
-                                                                {
-                                                                    edit?
-                                                                        <div className={classesPage.noteImageButton} style={{background: 'red'}} onClick={()=>{
-                                                                            images.splice(idx, 1)
-                                                                            setDocuments([...images])
-                                                                        }}>X</div>
-                                                                        :
-                                                                        null
-                                                                }
-                                                            </div>)}
-                                                        </div>
-                                                    </div>
                                                     <div className={classesPage.column}>
                                                         <TextField
                                                             error={!price}
                                                             type={'text'}
-                                                            label={'Цена*'}
+                                                            label={'Сколько вы готовы заплатить?*'}
                                                             value={price}
                                                             className={classesPage.input}
                                                             onChange={(event)=>{
@@ -521,6 +483,59 @@ const Order = React.memo((props) => {
                                                             />
                                                         </div>
                                                     </div>
+                                                    <Autocomplect2gis
+                                                        setAddress={(address)=>{setAddress(address)}}
+                                                        setGeo={(geo)=>{setGeo(geo)}}
+                                                        defaultValue={address}
+                                                        _inputValue={address}
+                                                        label='Адрес'
+                                                    />
+                                                    <div className={classesPage.geo} onClick={()=>{
+                                                        setFullDialog('Геолокация', <Geo change={true} geo={geo} setAddressGeo={newGeo=>setGeo([...newGeo])} setAddressName={setAddress}/>)
+                                                        showFullDialog(true)
+                                                    }}>
+                                                        {
+                                                            geo[0]===42.8700000&&geo[1]===74.5900000?
+                                                                'Задайте геолокацию'
+                                                                :
+                                                                'Изменить геолокацию'
+                                                        }
+                                                    </div>
+                                                    {
+                                                        addresses&&addresses.length?
+                                                            <div className={classesOrder.rowPrice}>
+                                                                {
+                                                                    addresses.map((element, idx)=> {
+                                                                        return(
+                                                                            <Chip
+                                                                                className={classesOrder.chip}
+                                                                                onClick={()=>{
+                                                                                    setAddress(element.address)
+                                                                                    setApartment(element.apartment)
+                                                                                    setGeo(element.geo)
+                                                                                }}
+                                                                                color={address===element.address?'primary':'default'}
+                                                                                label={element.address}
+                                                                                key={`${element.address}${idx}`}
+                                                                            />
+                                                                        )}
+                                                                    )
+                                                                }
+                                                            </div>
+                                                            :
+                                                            null
+                                                    }
+                                                    <TextField
+                                                        label={'№ дома или квартиры'}
+                                                        value={apartment}
+                                                        className={classesPage.input}
+                                                        onChange={(event)=>{
+                                                            setApartment(event.target.value)
+                                                        }}
+                                                        inputProps={{
+                                                            'aria-label': 'description',
+                                                        }}
+                                                    />
                                                     <div className={classesOrder.rowUrgency}>
                                                         <FormControlLabel
                                                             control={
@@ -533,6 +548,16 @@ const Order = React.memo((props) => {
                                                             label='Срочный заказ'
                                                         />
                                                     </div>
+                                                    <TextField
+                                                        multiline={true}
+                                                        label='Доп. информация'
+                                                        value={info}
+                                                        className={classesPage.input}
+                                                        onChange={(event)=>{setInfo(event.target.value)}}
+                                                        inputProps={{
+                                                            'aria-label': 'description',
+                                                        }}
+                                                    />
                                                     <div className={isMobileApp?classesPage.column:classesPage.row}>
                                                         <div className={classesPage.row}>
                                                             <TextField
@@ -589,59 +614,34 @@ const Order = React.memo((props) => {
                                                             }
                                                         </div>
                                                     </div>
-                                                    <TextField
-                                                        label={'Квартира'}
-                                                        value={apartment}
-                                                        className={classesPage.input}
-                                                        onChange={(event)=>{
-                                                            setApartment(event.target.value)
-                                                        }}
-                                                        inputProps={{
-                                                            'aria-label': 'description',
-                                                        }}
-                                                    />
-                                                    <Autocomplect2gis
-                                                        setAddress={(address)=>{setAddress(address)}}
-                                                        setGeo={(geo)=>{setGeo(geo)}}
-                                                        defaultValue={address}
-                                                        _inputValue={address}
-                                                        label='Адрес'
-                                                    />
-                                                    <div className={classesPage.geo} onClick={()=>{
-                                                        setFullDialog('Геолокация', <Geo change={true} geo={geo} setAddressGeo={newGeo=>setGeo([...newGeo])} setAddressName={setAddress}/>)
-                                                        showFullDialog(true)
-                                                    }}>
-                                                        {
-                                                            geo[0]===42.8700000&&geo[1]===74.5900000?
-                                                                'Задайте геолокацию'
-                                                                :
-                                                                'Изменить геолокацию'
-                                                        }
-                                                    </div>
-                                                    {
-                                                        addresses&&addresses.length?
-                                                            <div className={classesOrder.rowPrice}>
+                                                    <br/>
+                                                    <div className={classesPage.row}>
+                                                        <div className={classesPage.nameField}>Добавить фото:&nbsp;&nbsp;</div>
+                                                        <div className={classesPage.noteImageList}>
+                                                            {
+                                                                edit?
+                                                                    <img className={classesPage.noteImage} src='/static/add.png' onClick={()=>{imageRef.current.click()}} />
+                                                                    :
+                                                                    null
+                                                            }
+                                                            {images.map((element, idx)=> <div key={`noteImageDiv${idx}`} className={classesPage.noteImageDiv}>
+                                                                <img className={classesPage.noteImage} src={element} onClick={()=>{
+                                                                    setShowLightbox(true)
+                                                                    setImagesLightbox(images)
+                                                                    setIndexLightbox(idx)
+                                                                }}/>
                                                                 {
-                                                                    addresses.map((element, idx)=> {
-                                                                        return(
-                                                                            <Chip
-                                                                                className={classesOrder.chip}
-                                                                                onClick={()=>{
-                                                                                    setAddress(element.address)
-                                                                                    setApartment(element.apartment)
-                                                                                    setGeo(element.geo)
-                                                                                }}
-                                                                                color={address===element.address?'primary':'default'}
-                                                                                label={element.address}
-                                                                                key={`${element.address}${idx}`}
-                                                                            />
-                                                                        )}
-                                                                    )
+                                                                    edit?
+                                                                        <div className={classesPage.noteImageButton} style={{background: 'red'}} onClick={()=>{
+                                                                            images.splice(idx, 1)
+                                                                            setDocuments([...images])
+                                                                        }}>X</div>
+                                                                        :
+                                                                        null
                                                                 }
-                                                            </div>
-                                                            :
-                                                            null
-                                                    }
+                                                            </div>)}
+                                                        </div>
+                                                    </div>
                                                 </CardContent>
                                             </Card>
                                             :

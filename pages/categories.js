@@ -17,6 +17,7 @@ import { getClientGqlSsr } from '../src/getClientGQL'
 import { forceCheck } from 'react-lazyload';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
+import SearchIcon from '@material-ui/icons/Search';
 import Sign from '../components/dialog/Sign'
 import Chip from '@material-ui/core/Chip';
 import styleOrder from '../src/styleMUI/other/order'
@@ -125,29 +126,55 @@ const Categories = React.memo((props) => {
                         </div>
                         :
                         authenticated?
-                            <Link href={'/order/[id]'} as={'/order/new'}>
+                            <div className={classesCategory.cardAOW}>
+                                <Link  href='/application/[id]' as={'/application/new'}>
+                                    <Button
+                                        color='primary'
+                                        variant='contained'
+                                        style={{width: 174}}
+                                        startIcon={<SearchIcon/>}
+                                    >
+                                        Найти работу
+                                    </Button>
+                                </Link>
+                                <Link href={'/order/[id]'} as={'/order/new'}>
+                                    <Button
+                                        color='primary'
+                                        variant='contained'
+                                        style={{width: 174}}
+                                        startIcon={<AddIcon/>}
+                                    >
+                                        Создать заказ
+                                    </Button>
+                                </Link>
+                            </div>
+                            :
+                            <div className={classesCategory.cardAOW}>
                                 <Button
-                                    variant='contained'
                                     color='primary'
-                                    className={classesCategory.cardAO}
-                                    startIcon={<AddIcon />}
+                                    variant='contained'
+                                    style={{width: 174}}
+                                    startIcon={<SearchIcon/>}
+                                    onClick={()=>{
+                                        setMiniDialog('', <Sign/>)
+                                        showMiniDialog(true)
+                                    }}
+                                >
+                                    Найти работу
+                                </Button>
+                                <Button
+                                    color='primary'
+                                    variant='contained'
+                                    style={{width: 174}}
+                                    startIcon={<AddIcon/>}
+                                    onClick={()=>{
+                                        setMiniDialog('', <Sign/>)
+                                        showMiniDialog(true)
+                                    }}
                                 >
                                     Создать заказ
                                 </Button>
-                            </Link>
-                            :
-                            <Button
-                                variant='contained'
-                                color='primary'
-                                className={classesCategory.cardAO}
-                                startIcon={<AddIcon />}
-                                onClick={()=>{
-                                    setMiniDialog('', <Sign/>)
-                                    showMiniDialog(true)
-                                }}
-                            >
-                                Создать заказ
-                            </Button>
+                            </div>
                 }
             </div>
         </App>

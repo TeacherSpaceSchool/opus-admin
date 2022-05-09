@@ -2,7 +2,7 @@ import Head from 'next/head';
 import React, { useState, useRef, useEffect } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
-import { getApplication, setApplication, addApplication, deleteApplication } from '../../src/gql/application'
+import { getApplication, setApplication, addApplication, deleteApplication, addCommentForApplication, deleteCommentForApplication } from '../../src/gql/application'
 import { getCategories } from '../../src/gql/category'
 import { getSubcategories } from '../../src/gql/subcategory'
 import stylePage from '../../src/styleMUI/list'
@@ -15,7 +15,8 @@ import { bindActionCreators } from 'redux'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 import * as snackbarActions from '../../redux/actions/snackbar'
 import * as appActions from '../../redux/actions/app'
-import Remove from '@material-ui/icons/Remove';
+import Send from '@material-ui/icons/Send';
+import AttachFile from '@material-ui/icons/AttachFile';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -51,28 +52,13 @@ const Application = React.memo((props) => {
     };
     let [info, setInfo] = useState(data.object&&data.object.info?data.object.info:'');
     let [comments, setComments] = useState(data.object&&data.object.comments?[...data.object.comments]:[]);
-    let addComment = ()=>{
-        if(data.object.status==='активный'&&['manager', 'admin'].includes(profile.role)){
-            comments = ['', ...comments]
-            setComments(comments)
-        }
-    };
-    let editComment = (event, idx)=>{
-        if(data.object.status==='активный'&&['manager', 'admin'].includes(profile.role)) {
-            comments[idx] = event.target.value
-            setComments([...comments])
-        }
-    };
-    let deleteComment = (idx)=>{
-        if(data.object.status==='активный'&&['manager', 'admin'].includes(profile.role)) {
-            comments.splice(idx, 1);
-            setComments([...comments])
-        }
-    };
     let [edit] = useState(router.query.id==='new'||data.object&&data.object.user._id===profile._id&&data.object.status==='активный');
+    let [newComment, setNewComment] = useState('');
     let [category, setCategory] = useState(data.object?data.object.category:null);
     let [subcategory, setSubcategory] = useState(data.object?data.object.subcategory:null);
     let documentRef = useRef(null);
+    let fileCommentRef = useRef(null);
+    let [fileComment, setFileComment] = useState(null);
     let [documents, setDocuments] = useState(data.object&&data.object.documents?[...data.object.documents]:[]);
     let [uploads, setUploads] = useState([]);
     let handleChangeDocuments = (async (event) => {
@@ -87,19 +73,25 @@ const Application = React.memo((props) => {
             showSnackBar('Cлишком много изображений')
         }
     })
-    let [subcategories, setSubcategories] = useState([]);
+    let handleChangeFileComment = (async (event) => {
+        if(event.target.files[0]&&event.target.files[0].size / 1024 / 1024 < 50)
+            setFileComment(event.target.files[0])
+        else
+            showSnackBar('Файл слишком большой')
+    })
+    let [subcategories, setSubcategories] = useState(data.subcategories);
     useEffect(() => {
-        (async()=>{
-            if(category) {
-                setSubcategories(await getSubcategories({category: category._id}))
-            }
-            else
-                setSubcategories([])
-            if(!initialRender.current)
+        if(initialRender.current)
+            initialRender.current = false
+        else
+            (async()=>{
+                if(category) {
+                    setSubcategories(await getSubcategories({category: category._id}))
+                }
+                else
+                    setSubcategories([])
                 setSubcategory(null)
-            else
-                initialRender.current = false
-        })()
+            })()
     }, [category]);
     const handlerSwipe = useSwipeable({
         onSwipedLeft: (eventData) => {
@@ -152,16 +144,21 @@ const Application = React.memo((props) => {
                                                 router.query.id==='new'?
                                                     <>
                                                     <br/>
-                                                    <Autocomplete
-                                                        options={data.categories}
-                                                        value={category}
-                                                        onChange={(event, newValue) => {
-                                                            setCategory(newValue);
-                                                        }}
-                                                        className={classesPage.input}
-                                                        getOptionLabel={(option) => option.name}
-                                                        renderInput={(params) => <TextField error={!category} {...params} label='Выберите категорию' />}
-                                                    />
+                                                    {
+                                                        !router.query.category?
+                                                            <Autocomplete
+                                                                options={data.categories}
+                                                                value={category}
+                                                                onChange={(event, newValue) => {
+                                                                    setCategory(newValue);
+                                                                }}
+                                                                className={classesPage.input}
+                                                                getOptionLabel={(option) => option.name}
+                                                                renderInput={(params) => <TextField error={!category} {...params} label='Выберите категорию' />}
+                                                            />
+                                                            :
+                                                            null
+                                                    }
                                                     {
                                                         subcategories&&subcategories.length?
                                                             <Autocomplete
@@ -237,60 +234,75 @@ const Application = React.memo((props) => {
                                                     </div>
                                                     </>
                                             }
-                                            <br/>
-                                            <div className={classesPage.row}>
-                                                <div className={classesPage.nameField}>Документы:&nbsp;&nbsp;</div>
-                                                <div className={classesPage.noteImageList}>
-                                                    {
-                                                        edit?
-                                                            <img className={classesPage.noteImage} src='/static/add.png' onClick={()=>{documentRef.current.click()}} />
-                                                            :
-                                                            null
-                                                    }
-                                                    {documents.map((element, idx)=> <div key={`noteImageDiv${idx}`} className={classesPage.noteImageDiv}>
-                                                        <img className={classesPage.noteImage} src={element} onClick={()=>{
-                                                            setShowLightbox(true)
-                                                            setImagesLightbox(documents)
-                                                            setIndexLightbox(idx)
-                                                        }}/>
-                                                        {
-                                                            edit?
-                                                                <div className={classesPage.noteImageButton} style={{background: 'red'}} onClick={()=>{
-                                                                    documents.splice(idx, 1)
-                                                                    setDocuments([...documents])
-                                                                }}>X</div>
-                                                                :
-                                                                null
-                                                        }
-                                                    </div>)}
-                                                </div>
-                                            </div>
+                                            {
+                                                false?
+                                                    <>
+                                                    <br/>
+                                                    <div className={classesPage.row}>
+                                                        <div className={classesPage.nameField}>Документы:&nbsp;&nbsp;</div>
+                                                        <div className={classesPage.noteImageList}>
+                                                            {
+                                                                edit?
+                                                                    <img className={classesPage.noteImage} src='/static/add.png' onClick={()=>{documentRef.current.click()}} />
+                                                                    :
+                                                                    null
+                                                            }
+                                                            {documents.map((element, idx)=> <div key={`noteImageDiv${idx}`} className={classesPage.noteImageDiv}>
+                                                                <img className={classesPage.noteImage} src={element} onClick={()=>{
+                                                                    setShowLightbox(true)
+                                                                    setImagesLightbox(documents)
+                                                                    setIndexLightbox(idx)
+                                                                }}/>
+                                                                {
+                                                                    edit?
+                                                                        <div className={classesPage.noteImageButton} style={{background: 'red'}} onClick={()=>{
+                                                                            documents.splice(idx, 1)
+                                                                            setDocuments([...documents])
+                                                                        }}>X</div>
+                                                                        :
+                                                                        null
+                                                                }
+                                                            </div>)}
+                                                        </div>
+                                                    </div>
+                                                    <br/>
+                                                    </>
+                                                    :
+                                                    null
+                                            }
+                                            {
+                                                false?
+                                                    <TextField
+                                                        multiline={true}
+                                                        label='Информация'
+                                                        value={info}
+                                                        className={classesPage.input}
+                                                        onChange={(event)=>{if(edit)setInfo(event.target.value)}}
+                                                        inputProps={{
+                                                            'aria-label': 'description',
+                                                        }}
+                                                    />
+                                                    :
+                                                    null
+                                            }
                                             <br/>
                                             {router.query.id==='new'?
                                                 <>
                                                 <div className={classesPage.nameField}>
-                                                    "Помощь на дороге" подкатегориясы үчүн сүрөт жана документ талап кылынбайт.
+                                                    Чексиз сандаган категорияларды кошуп, көбүрөөк тапшырык алыңыз!<br/>
+                                                    Бул үчүн жаңы категорияны тандап, "Подать" баскычын басыңыз.
                                                 </div>
                                                 <div className={classesPage.nameField}>
-                                                    Для подкатегории "Помощь на дороге" фото документов не требуется.
+                                                    Добавляйте неограниченное количество категорий и получайте больше заказов!<br/>
+                                                    Для этого, выберите новую категорию и нажмите "Подать"
                                                 </div>
                                                 </>
                                                 :
                                                 null
                                             }
-                                            <TextField
-                                                multiline={true}
-                                                label='Информация'
-                                                value={info}
-                                                className={classesPage.input}
-                                                onChange={(event)=>{if(edit)setInfo(event.target.value)}}
-                                                inputProps={{
-                                                    'aria-label': 'description',
-                                                }}
-                                            />
                                             {
-                                                router.query.id==='new'?
-                                                    <Button onClick={async()=>{
+                                                /*router.query.id==='new'*/false?
+                                                    <Button onClick={()=>{
                                                         window.open('/static/application.pdf','_blank')
                                                     }} color='primary'>
                                                         Как подать заявку?
@@ -301,43 +313,121 @@ const Application = React.memo((props) => {
                                             </>
                                             :
                                             <>
-                                            {comments.map((element, idx)=>
-                                                <FormControl key={`phone${idx}`} className={classesPage.input}>
-                                                    <InputLabel>Комментарий</InputLabel>
-                                                    <Input
-                                                        value={element}
-                                                        onChange={(event)=>{editComment(event, idx)}}
-                                                        inputProps={{
-                                                            'aria-label': 'description',
-                                                        }}
-                                                        endAdornment={
-                                                            data.object.status==='активный'&&['manager', 'admin'].includes(profile.role)?
-                                                                <InputAdornment position='end'>
+                                            {
+                                                data.object.status==='активный'&&['manager', 'admin'].includes(profile.role)?
+                                                    <>
+                                                    <FormControl className={classesPage.input}>
+                                                        <InputLabel>Комментарий</InputLabel>
+                                                        <Input
+                                                            multiline
+                                                            value={newComment}
+                                                            onChange={event=>setNewComment(event.target.value)}
+                                                            inputProps={{
+                                                                'aria-label': 'description',
+                                                            }}
+                                                            startAdornment={
+                                                                <InputAdornment position='start'>
                                                                     <IconButton
                                                                         onClick={()=>{
-                                                                            deleteComment(idx)
+                                                                            fileCommentRef.current.click()
                                                                         }}
                                                                         aria-label='toggle password visibility'
                                                                     >
-                                                                        <Remove/>
+                                                                        <AttachFile color={fileComment?'primary':'default'}/>
                                                                     </IconButton>
                                                                 </InputAdornment>
-                                                                :
-                                                                null
-                                                        }
-                                                    />
-                                                </FormControl>
-                                            )}
-                                            {
-                                                ['manager', 'admin'].includes(profile.role)&&data.object.status==='активный'?
-                                                    <Button onClick={async()=>{
-                                                        addComment()
-                                                    }} color='primary'>
-                                                        Добавить комментарий
-                                                    </Button>
+                                                            }
+                                                            endAdornment={
+                                                                <InputAdornment position='end'>
+                                                                    <IconButton
+                                                                        onClick={async ()=>{
+                                                                            if(newComment) {
+                                                                                let res = await addCommentForApplication({_id: router.query.id, file: fileComment, comment: newComment})
+                                                                                setNewComment('')
+                                                                                setFileComment(null)
+                                                                                setComments([res, ...comments])
+                                                                            }
+                                                                            else showSnackBar('Заполните все поля')
+                                                                        }}
+                                                                        aria-label='toggle password visibility'
+                                                                    >
+                                                                        <Send color={newComment?'primary':'default'}/>
+                                                                    </IconButton>
+                                                                </InputAdornment>
+                                                            }
+                                                        />
+                                                    </FormControl>
+                                                    <br/>
+                                                    </>
                                                     :
                                                     null
                                             }
+                                            {comments.map((element, idx)=>{
+                                                if(element.substring(0,4)==='http')
+                                                    return <div key={`phone${idx}`}>
+                                                        <div key={`phone${idx}`} className={classesPage.row}>
+                                                            <div className={classesPage.nameField}>
+                                                                Файл:&nbsp;
+                                                            </div>
+                                                            <a href={element.split(' | ')[0]} target='_blank' style={{width: '100%'}}>
+                                                                <div className={classesPage.value} style={{width: '100%'}}>
+                                                                    {element.split(' | ')[1]}
+                                                                </div>
+                                                            </a>
+                                                            {
+                                                                data.object.status==='активный'&&['manager', 'admin'].includes(profile.role)?
+                                                                    <div className={classesPage.value}  onClick={async()=>{
+                                                                        let res = await deleteCommentForApplication({_id: router.query.id, idx})
+                                                                        if(res==='OK') {
+                                                                            comments.splice(idx, 1);
+                                                                            setComments([...comments])
+                                                                        }
+                                                                    }}>
+                                                                        ❌
+                                                                    </div>
+                                                                    :
+                                                                    null
+                                                            }
+                                                        </div>
+                                                        {
+                                                            data.object.status==='активный'&&['manager', 'admin'].includes(profile.role)?
+                                                                <br/>
+                                                                :
+                                                                null
+                                                        }
+                                                    </div>
+                                                else
+                                                    return <div key={`phone${idx}`}>
+                                                        <div className={classesPage.row}>
+                                                            <div className={classesPage.nameField}>
+                                                                Комментарий:&nbsp;
+                                                            </div>
+                                                            <div className={classesPage.value} style={{width: '100%'}}>
+                                                                {element}
+                                                            </div>
+                                                            {
+                                                                data.object.status==='активный'&&['manager', 'admin'].includes(profile.role)?
+                                                                    <div className={classesPage.value}  onClick={async()=>{
+                                                                        let res = await deleteCommentForApplication({_id: router.query.id, idx})
+                                                                        if(res==='OK') {
+                                                                            comments.splice(idx, 1);
+                                                                            setComments([...comments])
+                                                                        }
+                                                                    }}>
+                                                                        ❌
+                                                                    </div>
+                                                                    :
+                                                                    null
+                                                            }
+                                                        </div>
+                                                        {
+                                                            data.object.status==='активный'&&['manager', 'admin'].includes(profile.role)?
+                                                                <br/>
+                                                                :
+                                                                null
+                                                        }
+                                                    </div>
+                                            })}
                                             </>
                                     }
                                 </CardContent>
@@ -353,12 +443,12 @@ const Application = React.memo((props) => {
                                     router.query.id==='new'?
                                         <>
                                         <Button onClick={async()=>{
-                                            if (category&&subcategory) {
+                                            if ((router.query.category||category)&&subcategory) {
                                                 const action = async() => {
                                                     await addApplication({
                                                         uploads,
                                                         info,
-                                                        category: category._id,
+                                                        category: router.query.category?router.query.category:category._id,
                                                         subcategory: subcategory._id
                                                     })
                                                     Router.push('/applications')
@@ -374,23 +464,6 @@ const Application = React.memo((props) => {
                                         </>
                                         :
                                         <>
-                                        {
-                                            data.object.status==='активный'&&['manager', 'admin'].includes(profile.role)&&page===1?
-                                                <Button onClick={async()=>{
-                                                    let editElement = {_id: router.query.id}
-                                                    if(JSON.stringify(comments)!==JSON.stringify(data.object.comments))editElement.comments = comments
-                                                    const action = async() => {
-                                                        await setApplication(editElement)
-                                                        Router.reload()
-                                                    }
-                                                    setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
-                                                    showMiniDialog(true)
-                                                }} color='primary'>
-                                                    Сохранить
-                                                </Button>
-                                                :
-                                                null
-                                        }
                                         {
                                             edit?
                                                 <Button onClick={async()=>{
@@ -447,6 +520,13 @@ const Application = React.memo((props) => {
                 type='file'
                 onChange={handleChangeDocuments}
             />
+            <input
+                accept='*/*'
+                style={{ display: 'none' }}
+                ref={fileCommentRef}
+                type='file'
+                onChange={handleChangeFileComment}
+            />
         </App>
     )
 })
@@ -464,7 +544,11 @@ Application.getInitialProps = async function(ctx) {
     return {
         data: {
             object: ctx.query.id==='new'? {documents: [], info: '', category: ctx.query.categoryId?{_id: ctx.query.categoryId, name: ctx.query.categoryName}:null, subcategory: ctx.query.subcategoryId?{_id: ctx.query.subcategoryId, name: ctx.query.subcategoryName}:null}:await getApplication({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
-            categories: await getCategories({}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
+            categories: await getCategories({}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            subcategories: ctx.query.id==='new'&&ctx.query.category?
+                        await getSubcategories({category: ctx.query.category}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
+                        :
+                        []
         }
     };
 };

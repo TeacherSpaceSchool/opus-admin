@@ -58,38 +58,48 @@ const User = React.memo((props) => {
                                     <ArrowBackIcon/>
                                 </IconButton>
                                 <div className={classesBonus.title}>
-                                    Мой промокод
-                                </div>
-                                <div className={classesBonus.value}>
-                                    {
-                                        isMobileApp?
-                                            <>
-                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                            {data.bonus.code}
-                                            &nbsp;
-                                            <IconButton onClick={()=>{
-                                                navigator.share({
-                                                    url: `${urlMain}?code=${data.bonus.code}`
-                                                })
-                                            }}>
-                                                <ShareleIcon/>
-                                            </IconButton>
-                                            </>
-                                            :
-                                            data.bonus.code
-                                    }
-                                </div>
-                                <div className={classesBonus.title}>
                                     Всего бонусов
                                 </div>
                                 <div className={classesBonus.value}>
                                     {data.bonus.count}
                                 </div>
-                                <Button style={{width: '100%'}} onClick={async()=>{
-                                    window.open('/static/bonus.pdf','_blank')
+                                <div className={classesBonus.title}>
+                                    Мой промокод
+                                </div>
+                                <div className={classesBonus.value}>
+                                    {data.bonus.code}
+                                </div>
+                                <Button
+                                    startIcon={<ShareleIcon />}
+                                    variant='contained' style={{width: '100%'}} onClick={async()=>{
+                                    navigator.share({
+                                        url: `${urlMain}?code=${data.bonus.code}`
+                                    })
                                 }} color='primary'>
-                                    Как получать бонусы?
+                                    Поделиться промокодом
                                 </Button>
+                                {
+                                    false?
+                                        <Button style={{width: '100%'}} onClick={async()=>{
+                                            window.open('/static/bonus.pdf','_blank')
+                                        }} color='primary'>
+                                            Как получать бонусы?
+                                        </Button>
+                                        :
+                                        null
+                                }
+                                <br/>
+                                <br/>
+                                <div className={classesPageList.nameField}>
+                                    <div style={{color: '#646464'}}>Бонус системасы кандай иштейт?</div>
+                                    Кишилерди  промокодуңуз менен катталууга чакырыңыз жана ар бир катталуучу үчүн 15 бонустук упай алыңыз.<br/>
+                                    Болочокто бонустарды OPUS тиркемесинде колдонсоңуз болот!
+                                </div>
+                                <div className={classesPageList.nameField}>
+                                    <div style={{color: '#646464'}}>Как работает бонусная система?</div>
+                                    Приглашайте людей зарегистрироваться по вашему промокоду и получите 15 бонусов за каждую регистрацию.<br/>
+                                    В будущем бонусы можно будет использовать в приложении OPUS!
+                                </div>
                             </CardContent>
                         </Card>
                         {

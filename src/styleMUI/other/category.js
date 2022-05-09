@@ -94,5 +94,15 @@ export default makeStyles({
         borderRadius: '12px !important',
         marginBottom: '50px  !important',
         left: 'calc((100vw - 222px) / 2) !important'
+    },
+    cardAOW: {
+        gap: '3px',
+        display: 'flex',
+        position: 'fixed !important',
+        bottom: '40px !important',
+        width: '350px !important',
+        borderRadius: '12px !important',
+        marginBottom: '50px  !important',
+        left: 'calc((100vw - 350px) / 2) !important'
     }
 })

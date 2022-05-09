@@ -97,10 +97,40 @@ export const setApplication = async(element)=>{
         let res = await client.mutate({
             variables: element,
             mutation : gql`
-                    mutation ($_id: ID!, $approve: Boolean, $documents: [String], $uploads: [Upload], $comments: [String], $info: String) {
-                        setApplication(_id: $_id, approve: $approve, documents: $documents, uploads: $uploads, comments: $comments, info: $info) 
+                    mutation ($_id: ID!, $approve: Boolean, $documents: [String], $uploads: [Upload], $info: String) {
+                        setApplication(_id: $_id, approve: $approve, documents: $documents, uploads: $uploads, info: $info) 
                     }`})
         return res.data.setApplication
+    } catch(err){
+        console.error(err)
+    }
+}
+
+export const addCommentForApplication = async(element)=>{
+    try{
+        const client = new SingletonApolloClient().getClient()
+        let res = await client.mutate({
+            variables: element,
+            mutation : gql`
+                    mutation ($_id: ID!, $file: Upload, $comment: String!) {
+                        addCommentForApplication(_id: $_id, file: $file, comment: $comment) 
+                    }`})
+        return res.data.addCommentForApplication
+    } catch(err){
+        console.error(err)
+    }
+}
+
+export const deleteCommentForApplication = async(element)=>{
+    try{
+        const client = new SingletonApolloClient().getClient()
+        let res = await client.mutate({
+            variables: element,
+            mutation : gql`
+                    mutation ($_id: ID!, $idx: Int!) {
+                        deleteCommentForApplication(_id: $_id, idx: $idx) 
+                    }`})
+        return res.data.deleteCommentForApplication
     } catch(err){
         console.error(err)
     }

@@ -24,6 +24,9 @@ import { useRouter } from 'next/router';
 import { Alert } from '@material-ui/lab';
 import Snackbar from '@material-ui/core/Snackbar';
 import Router from 'next/router'
+import Extra1Icon from '@material-ui/icons/Search';
+import Extra2Icon from '@material-ui/icons/Help';
+import Extra3Icon from '@material-ui/icons/Whatshot';
 
 const Index = React.memo((props) => {
     const classesPageList = stylePageList();
@@ -32,7 +35,6 @@ const Index = React.memo((props) => {
     const { data } = props;
     let [mainSubcategory, setMainsubcategory] = useState({...data.mainSubcategory});
     const { profile, authenticated } = props.user;
-    const { isMobileApp } = props.app;
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     const router = useRouter();
     const [alert, setAlert] = useState(router.query.alert);
@@ -61,10 +63,10 @@ const Index = React.memo((props) => {
                                     <img
                                         className={classesCategory.mediaAC}
                                         src={'/static/7cf5ce65af5184a23756f07517d716eb.png'}
-                                        alt='Категории'
+                                        alt='Все категории'
                                     />
                                     <div className={classesCategory.titleAC}>
-                                        Категории
+                                        Все категории
                                     </div>
                                 </Card>
                             </Link>
@@ -101,52 +103,90 @@ const Index = React.memo((props) => {
                         :
                         !profile.role||profile.role==='client'?
                             <>
-                            {isMobileApp?
-                                <img src={'/static/ikonkailozung.png'} className={classesIndex.mainImgM}/>
-                                :
-                                null
+                            {
+                                authenticated?
+                                    <div className={classesCategory.divMainCategory}>
+                                        <div className={classesPageList.rowCenter} style={{gap: '5px'}}>
+                                            <Link href={'/faq'}>
+                                                <div className={classesIndex.divMainExtra}>
+                                                    <div className={classesIndex.divImgExtra}>
+                                                        <Extra2Icon color='primary' className={classesIndex.imgExtra}/>
+                                                    </div>
+                                                    <div style={{width: 100, textAlign: 'center'}}>
+                                                        Как пользоваться
+                                                    </div>
+                                                </div>
+                                            </Link>
+                                            <Link  href='/application/[id]' as={'/application/new'}>
+                                                <div className={classesIndex.divMainExtra}>
+                                                    <div className={classesIndex.divImgExtra}>
+                                                        <Extra1Icon className={classesIndex.imgExtra}/>
+                                                    </div>
+                                                    <div style={{width: 80, textAlign: 'center'}}>
+                                                        Найти работу
+                                                    </div>
+                                                </div>
+                                            </Link>
+                                            <Link href={'/bonus'}>
+                                                <div className={classesIndex.divMainExtra}>
+                                                    <div className={classesIndex.divImgExtra}>
+                                                        <Extra3Icon color='primary' className={classesIndex.imgExtra}/>
+                                                    </div>
+                                                    <div style={{width: 60, textAlign: 'center'}}>
+                                                        Мои бонусы
+                                                    </div>
+                                                </div>
+                                            </Link>
+                                        </div>
+                                        {
+                                            mainSubcategory.sc1||mainSubcategory.sc2||mainSubcategory.sc3?
+                                                <div className={classesPageList.rowCenter} style={{gap: '5px'}}>
+                                                    {mainSubcategory.sc1?<CardSubcategory order element={mainSubcategory.sc1}/>:null}
+                                                    {mainSubcategory.sc2?<CardSubcategory order element={mainSubcategory.sc2}/>:null}
+                                                    {mainSubcategory.sc3?<CardSubcategory order element={mainSubcategory.sc3}/>:null}
+                                                </div>
+                                                :
+                                                null
+                                        }
+                                        {
+                                            mainSubcategory.sc4||mainSubcategory.sc5||mainSubcategory.sc6?
+                                                <div className={classesPageList.rowCenter} style={{gap: '5px'}}>
+                                                    {mainSubcategory.sc4?<CardSubcategory order element={mainSubcategory.sc4}/>:null}
+                                                    {mainSubcategory.sc5?<CardSubcategory order element={mainSubcategory.sc5}/>:null}
+                                                    {mainSubcategory.sc6?<CardSubcategory order element={mainSubcategory.sc6}/>:null}
+                                                </div>
+                                                :
+                                                null
+                                        }
+                                        <Link href={'/categories'}>
+                                            <Card className={classesCategory.cardAC}>
+                                                <img
+                                                    className={classesCategory.mediaAC}
+                                                    src={'/static/7cf5ce65af5184a23756f07517d716eb.png'}
+                                                    alt='Все категории'
+                                                />
+                                                <div className={classesCategory.titleAC}>
+                                                    Все категории
+                                                </div>
+                                            </Card>
+                                        </Link>
+                                        {
+                                            authenticated?
+                                                <div className={classesIndex.divMainExtra}/>
+                                                :
+                                                null
+                                        }
+                                    </div>
+                                    :
+                                    null
                             }
-                            <div className={classesCategory.divMainCategory}>
-                                {
-                                    mainSubcategory.sc1||mainSubcategory.sc2||mainSubcategory.sc3?
-                                        <div className={classesPageList.rowCenter} style={{gap: '5px'}}>
-                                            {mainSubcategory.sc1?<CardSubcategory order element={mainSubcategory.sc1}/>:null}
-                                            {mainSubcategory.sc2?<CardSubcategory order element={mainSubcategory.sc2}/>:null}
-                                            {mainSubcategory.sc3?<CardSubcategory order element={mainSubcategory.sc3}/>:null}
-                                        </div>
-                                        :
-                                        null
-                                }
-                                {
-                                    mainSubcategory.sc4||mainSubcategory.sc5||mainSubcategory.sc6?
-                                        <div className={classesPageList.rowCenter} style={{gap: '5px'}}>
-                                            {mainSubcategory.sc4?<CardSubcategory order element={mainSubcategory.sc4}/>:null}
-                                            {mainSubcategory.sc5?<CardSubcategory order element={mainSubcategory.sc5}/>:null}
-                                            {mainSubcategory.sc6?<CardSubcategory order element={mainSubcategory.sc6}/>:null}
-                                        </div>
-                                        :
-                                        null
-                                }
-                                <Link href={'/categories'}>
-                                    <Card className={classesCategory.cardAC}>
-                                        <img
-                                            className={classesCategory.mediaAC}
-                                            src={'/static/7cf5ce65af5184a23756f07517d716eb.png'}
-                                            alt='Категории'
-                                        />
-                                        <div className={classesCategory.titleAC}>
-                                            Категории
-                                        </div>
-                                    </Card>
-                                </Link>
-                            </div>
                             {
                                 authenticated?
                                     <Link href={'/order/[id]'} as={'/order/new'}>
                                         <Button
                                             variant='contained'
                                             color='primary'
-                                            className={classesCategory.cardAO}
+                                            className={classesCategory.cardAOW}
                                             startIcon={<AddIcon />}
                                         >
                                             Создать заказ
@@ -156,7 +196,7 @@ const Index = React.memo((props) => {
                                     <Button
                                         variant='contained'
                                         color='primary'
-                                        className={classesCategory.cardAO}
+                                        className={classesCategory.cardAOW}
                                         startIcon={<AddIcon />}
                                         onClick={()=>{
                                             setMiniDialog('', <Sign/>)
