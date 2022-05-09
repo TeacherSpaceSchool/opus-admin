@@ -103,9 +103,9 @@ const Index = React.memo((props) => {
                         :
                         !profile.role||profile.role==='client'?
                             <>
-                            {
-                                authenticated?
-                                    <div className={classesCategory.divMainCategory}>
+                            <div className={classesCategory.divMainCategory}>
+                                {
+                                    authenticated?
                                         <div className={classesPageList.rowCenter} style={{gap: '5px'}}>
                                             <Link href={'/faq'}>
                                                 <div className={classesIndex.divMainExtra}>
@@ -138,48 +138,48 @@ const Index = React.memo((props) => {
                                                 </div>
                                             </Link>
                                         </div>
-                                        {
-                                            mainSubcategory.sc1||mainSubcategory.sc2||mainSubcategory.sc3?
-                                                <div className={classesPageList.rowCenter} style={{gap: '5px'}}>
-                                                    {mainSubcategory.sc1?<CardSubcategory order element={mainSubcategory.sc1}/>:null}
-                                                    {mainSubcategory.sc2?<CardSubcategory order element={mainSubcategory.sc2}/>:null}
-                                                    {mainSubcategory.sc3?<CardSubcategory order element={mainSubcategory.sc3}/>:null}
-                                                </div>
-                                                :
-                                                null
-                                        }
-                                        {
-                                            mainSubcategory.sc4||mainSubcategory.sc5||mainSubcategory.sc6?
-                                                <div className={classesPageList.rowCenter} style={{gap: '5px'}}>
-                                                    {mainSubcategory.sc4?<CardSubcategory order element={mainSubcategory.sc4}/>:null}
-                                                    {mainSubcategory.sc5?<CardSubcategory order element={mainSubcategory.sc5}/>:null}
-                                                    {mainSubcategory.sc6?<CardSubcategory order element={mainSubcategory.sc6}/>:null}
-                                                </div>
-                                                :
-                                                null
-                                        }
-                                        <Link href={'/categories'}>
-                                            <Card className={classesCategory.cardAC}>
-                                                <img
-                                                    className={classesCategory.mediaAC}
-                                                    src={'/static/7cf5ce65af5184a23756f07517d716eb.png'}
-                                                    alt='Все категории'
-                                                />
-                                                <div className={classesCategory.titleAC}>
-                                                    Все категории
-                                                </div>
-                                            </Card>
-                                        </Link>
-                                        {
-                                            authenticated?
-                                                <div className={classesIndex.divMainExtra}/>
-                                                :
-                                                null
-                                        }
-                                    </div>
-                                    :
-                                    null
-                            }
+                                        :
+                                        null
+                                }
+                                {
+                                    mainSubcategory.sc1||mainSubcategory.sc2||mainSubcategory.sc3?
+                                        <div className={classesPageList.rowCenter} style={{gap: '5px'}}>
+                                            {mainSubcategory.sc1?<CardSubcategory order element={mainSubcategory.sc1}/>:null}
+                                            {mainSubcategory.sc2?<CardSubcategory order element={mainSubcategory.sc2}/>:null}
+                                            {mainSubcategory.sc3?<CardSubcategory order element={mainSubcategory.sc3}/>:null}
+                                        </div>
+                                        :
+                                        null
+                                }
+                                {
+                                    mainSubcategory.sc4||mainSubcategory.sc5||mainSubcategory.sc6?
+                                        <div className={classesPageList.rowCenter} style={{gap: '5px'}}>
+                                            {mainSubcategory.sc4?<CardSubcategory order element={mainSubcategory.sc4}/>:null}
+                                            {mainSubcategory.sc5?<CardSubcategory order element={mainSubcategory.sc5}/>:null}
+                                            {mainSubcategory.sc6?<CardSubcategory order element={mainSubcategory.sc6}/>:null}
+                                        </div>
+                                        :
+                                        null
+                                }
+                                <Link href={'/categories'}>
+                                    <Card className={classesCategory.cardAC}>
+                                        <img
+                                            className={classesCategory.mediaAC}
+                                            src={'/static/7cf5ce65af5184a23756f07517d716eb.png'}
+                                            alt='Все категории'
+                                        />
+                                        <div className={classesCategory.titleAC}>
+                                            Все категории
+                                        </div>
+                                    </Card>
+                                </Link>
+                                {
+                                    authenticated?
+                                        <div className={classesIndex.divMainExtra}/>
+                                        :
+                                        null
+                                }
+                            </div>
                             {
                                 authenticated?
                                     <Link href={'/order/[id]'} as={'/order/new'}>
