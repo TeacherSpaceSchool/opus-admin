@@ -21,6 +21,7 @@ import { useRouter } from 'next/router';
 import Button from '@material-ui/core/Button';
 import Sign from '../../components/dialog/Sign'
 import AddIcon from '@material-ui/icons/Add';
+import SearchIcon from '@material-ui/icons/Search';
 const height = 150
 
 const Specialists = React.memo((props) => {
@@ -104,37 +105,71 @@ const Specialists = React.memo((props) => {
                         }
                         {
                             authenticated?
-                                <Link
-                                    href={{
-                                        pathname: '/order/[id]',
-                                        query: {category: subcategory.category._id, subcategory: subcategory._id}
-                                    }}
-                                    as={
-                                        `/order/new?category=${subcategory.category._id}&subcategory=${subcategory._id}`
-                                    }
-                                >
+                                <div className={classesCategory.cardAOW}>
+                                    <Link
+                                        href={{
+                                            pathname: '/application/[id]',
+                                            query: {category: subcategory.category._id, subcategory: subcategory._id}
+                                        }}
+                                        as={
+                                            `/application/new?category=${subcategory.category._id}&subcategory=${subcategory._id}`
+                                        }
+                                    >
+                                        <Button
+                                            style={{width: 174}}
+                                            variant='contained'
+                                            color='primary'
+                                            startIcon={<SearchIcon/>}
+                                        >
+                                            Найти работу
+                                        </Button>
+                                    </Link>
+                                    <Link
+                                        href={{
+                                            pathname: '/order/[id]',
+                                            query: {category: subcategory.category._id, subcategory: subcategory._id}
+                                        }}
+                                        as={
+                                            `/order/new?category=${subcategory.category._id}&subcategory=${subcategory._id}`
+                                        }
+                                    >
+                                        <Button
+                                            variant='contained'
+                                            color='primary'
+                                            style={{width: 174}}
+                                            startIcon={<AddIcon />}
+                                        >
+                                            Создать заказ
+                                        </Button>
+                                    </Link>
+                                </div>
+                                :
+                                <div className={classesCategory.cardAOW}>
                                     <Button
-                                        variant='contained'
                                         color='primary'
-                                        className={classesCategory.cardAO}
-                                        startIcon={<AddIcon />}
+                                        variant='contained'
+                                        style={{width: 174}}
+                                        startIcon={<SearchIcon/>}
+                                        onClick={()=>{
+                                            setMiniDialog('', <Sign/>)
+                                            showMiniDialog(true)
+                                        }}
+                                    >
+                                        Найти работу
+                                    </Button>
+                                    <Button
+                                        color='primary'
+                                        variant='contained'
+                                        style={{width: 174}}
+                                        startIcon={<AddIcon/>}
+                                        onClick={()=>{
+                                            setMiniDialog('', <Sign/>)
+                                            showMiniDialog(true)
+                                        }}
                                     >
                                         Создать заказ
                                     </Button>
-                                </Link>
-                                :
-                                <Button
-                                    variant='contained'
-                                    color='primary'
-                                    className={classesCategory.cardAO}
-                                    startIcon={<AddIcon />}
-                                    onClick={()=>{
-                                        setMiniDialog('', <Sign/>)
-                                        showMiniDialog(true)
-                                    }}
-                                >
-                                    Создать заказ
-                                </Button>
+                                </div>
                         }
                         </>
                         :

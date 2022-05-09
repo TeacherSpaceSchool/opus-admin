@@ -3,8 +3,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import { getApplication, setApplication, addApplication, deleteApplication, addCommentForApplication, deleteCommentForApplication } from '../../src/gql/application'
-import { getCategories } from '../../src/gql/category'
-import { getSubcategories } from '../../src/gql/subcategory'
+import { getCategories, getCategory } from '../../src/gql/category'
+import { getSubcategories, getSubcategory } from '../../src/gql/subcategory'
 import stylePage from '../../src/styleMUI/list'
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -54,8 +54,8 @@ const Application = React.memo((props) => {
     let [comments, setComments] = useState(data.object&&data.object.comments?[...data.object.comments]:[]);
     let [edit] = useState(router.query.id==='new'||data.object&&data.object.user._id===profile._id&&data.object.status==='активный');
     let [newComment, setNewComment] = useState('');
-    let [category, setCategory] = useState(data.object?data.object.category:null);
-    let [subcategory, setSubcategory] = useState(data.object?data.object.subcategory:null);
+    let [category, setCategory] = useState(data.category?data.category:data.object?data.object.category:null);
+    let [subcategory, setSubcategory] = useState(data.subcategory?data.subcategory:data.object?data.object.subcategory:null);
     let documentRef = useRef(null);
     let fileCommentRef = useRef(null);
     let [fileComment, setFileComment] = useState(null);
@@ -145,7 +145,7 @@ const Application = React.memo((props) => {
                                                     <>
                                                     <br/>
                                                     {
-                                                        !router.query.category?
+                                                        !data.category?
                                                             <Autocomplete
                                                                 options={data.categories}
                                                                 value={category}
@@ -157,7 +157,14 @@ const Application = React.memo((props) => {
                                                                 renderInput={(params) => <TextField error={!category} {...params} label='Выберите категорию' />}
                                                             />
                                                             :
-                                                            null
+                                                            <div className={classesPage.row}>
+                                                                <div className={classesPage.nameField}>
+                                                                    Категория:&nbsp;
+                                                                </div>
+                                                                <div className={classesPage.value}>
+                                                                    {data.category.name}
+                                                                </div>
+                                                            </div>
                                                     }
                                                     {
                                                         subcategories&&subcategories.length?
@@ -172,7 +179,14 @@ const Application = React.memo((props) => {
                                                                 renderInput={(params) => <TextField error={!subcategory} {...params} label='Выберите подкатегорию' />}
                                                             />
                                                             :
-                                                            null
+                                                            <div className={classesPage.row}>
+                                                                <div className={classesPage.nameField}>
+                                                                    Подкатегория:&nbsp;
+                                                                </div>
+                                                                <div className={classesPage.value}>
+                                                                    {data.subcategory.name}
+                                                                </div>
+                                                            </div>
                                                     }
                                                     </>
                                                     :
@@ -443,12 +457,12 @@ const Application = React.memo((props) => {
                                     router.query.id==='new'?
                                         <>
                                         <Button onClick={async()=>{
-                                            if ((router.query.category||category)&&subcategory) {
+                                            if (category&&subcategory) {
                                                 const action = async() => {
                                                     await addApplication({
                                                         uploads,
                                                         info,
-                                                        category: router.query.category?router.query.category:category._id,
+                                                        category: category._id,
                                                         subcategory: subcategory._id
                                                     })
                                                     Router.push('/applications')
@@ -541,14 +555,18 @@ Application.getInitialProps = async function(ctx) {
             ctx.res.end()
         } else
             Router.push('/')
+    let category, subcategory
+    if(ctx.query.category)
+        category = await getCategory({_id: ctx.query.category}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
+    if(ctx.query.subcategory)
+        subcategory = await getSubcategory({_id: ctx.query.subcategory}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
     return {
         data: {
             object: ctx.query.id==='new'? {documents: [], info: '', category: ctx.query.categoryId?{_id: ctx.query.categoryId, name: ctx.query.categoryName}:null, subcategory: ctx.query.subcategoryId?{_id: ctx.query.subcategoryId, name: ctx.query.subcategoryName}:null}:await getApplication({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
-            categories: await getCategories({}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
-            subcategories: ctx.query.id==='new'&&ctx.query.category?
-                        await getSubcategories({category: ctx.query.category}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
-                        :
-                        []
+            categories: !ctx.query.category?await getCategories({}, ctx.req?await getClientGqlSsr(ctx.req):undefined):[],
+            subcategories: !ctx.query.subcategory&&ctx.query.id==='new'&&ctx.query.category?await getSubcategories({category: ctx.query.category}, ctx.req?await getClientGqlSsr(ctx.req):undefined):[],
+            category,
+            subcategory
         }
     };
 };

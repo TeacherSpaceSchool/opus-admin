@@ -110,7 +110,7 @@ const Index = React.memo((props) => {
                                             <Link href={'/faq'}>
                                                 <div className={classesIndex.divMainExtra}>
                                                     <div className={classesIndex.divImgExtra}>
-                                                        <Extra2Icon color='primary' className={classesIndex.imgExtra}/>
+                                                        <Extra2Icon className={classesIndex.imgExtra}/>
                                                     </div>
                                                     <div style={{width: 100, textAlign: 'center'}}>
                                                         Как пользоваться
@@ -130,7 +130,7 @@ const Index = React.memo((props) => {
                                             <Link href={'/bonus'}>
                                                 <div className={classesIndex.divMainExtra}>
                                                     <div className={classesIndex.divImgExtra}>
-                                                        <Extra3Icon color='primary' className={classesIndex.imgExtra}/>
+                                                        <Extra3Icon className={classesIndex.imgExtra}/>
                                                     </div>
                                                     <div style={{width: 60, textAlign: 'center'}}>
                                                         Мои бонусы
