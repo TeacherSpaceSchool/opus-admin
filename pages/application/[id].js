@@ -179,14 +179,17 @@ const Application = React.memo((props) => {
                                                                 renderInput={(params) => <TextField error={!subcategory} {...params} label='Выберите подкатегорию' />}
                                                             />
                                                             :
-                                                            <div className={classesPage.row}>
-                                                                <div className={classesPage.nameField}>
-                                                                    Подкатегория:&nbsp;
+                                                            data.subcategory?
+                                                                <div className={classesPage.row}>
+                                                                    <div className={classesPage.nameField}>
+                                                                        Подкатегория:&nbsp;
+                                                                    </div>
+                                                                    <div className={classesPage.value}>
+                                                                        {data.subcategory.name}
+                                                                    </div>
                                                                 </div>
-                                                                <div className={classesPage.value}>
-                                                                    {data.subcategory.name}
-                                                                </div>
-                                                            </div>
+                                                                :
+                                                                null
                                                     }
                                                     </>
                                                     :
