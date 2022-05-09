@@ -383,9 +383,6 @@ const Application = React.memo((props) => {
                                                 if(element.substring(0,4)==='http')
                                                     return <div key={`phone${idx}`}>
                                                         <div key={`phone${idx}`} className={classesPage.row}>
-                                                            <div className={classesPage.nameField}>
-                                                                Файл:&nbsp;
-                                                            </div>
                                                             <a href={element.split(' | ')[0]} target='_blank' style={{width: '100%'}}>
                                                                 <div className={classesPage.value} style={{width: '100%'}}>
                                                                     {element.split(' | ')[1]}
@@ -416,9 +413,6 @@ const Application = React.memo((props) => {
                                                 else
                                                     return <div key={`phone${idx}`}>
                                                         <div className={classesPage.row}>
-                                                            <div className={classesPage.nameField}>
-                                                                Комментарий:&nbsp;
-                                                            </div>
                                                             <div className={classesPage.value} style={{width: '100%'}}>
                                                                 {element}
                                                             </div>
