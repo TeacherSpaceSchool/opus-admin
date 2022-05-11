@@ -21,20 +21,28 @@ import { forceCheck } from 'react-lazyload';
 import { checkInt } from '../src/lib'
 import { readUser } from '../src/gql/user';
 import Badge from '@material-ui/core/Badge';
+import Input from '@material-ui/core/Input';
 import { useRouter } from 'next/router';
 import {useSwipeable} from 'react-swipeable';
+import { getPushNotifications } from '../src/gql/pushNotification'
+import CardPushNotification from '../components/CardPushNotification'
+import InputAdornment from '@material-ui/core/InputAdornment';
+import SearchIcon from '@material-ui/icons/Search';
+import CancelIcon from '@material-ui/icons/Cancel';
+import IconButton from '@material-ui/core/IconButton';
 const height = 100
 
 const Notifications = React.memo((props) => {
     const classesPageList = stylePageList();
     const { data } = props;
+    const { profile } = props.user;
     const router = useRouter();
     const initialRender = useRef(true);
     let [list, setList] = useState(data.list);
     const [page, setPage] = useState(data.page);
     const [unreadP, setUnreadP] = useState(data.unreadP);
     const getList = async()=>{
-        setList(page===0?await getChats({skip: 0, user: router.query.user}):await getNotifications({skip: 0, user: router.query.user}));
+        setList(page===0?await getChats({skip: 0, user: router.query.user, search}):profile.role!=='admin'||router.query.user?await getNotifications({skip: 0, user: router.query.user}):await getPushNotifications({search, skip: 0}));
         (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
         forceCheck()
         paginationWork.current = true;
@@ -53,9 +61,12 @@ const Notifications = React.memo((props) => {
     const checkPagination = async()=>{
         if(paginationWork.current&&!initialRender.current){
             let addedList = page===0?
-                await getChats({skip: list.length, user: router.query.user})
+                await getChats({skip: list.length, user: router.query.user, search})
                 :
+                profile.role!=='admin'||router.query.user?
                 await getNotifications({skip: list.length, user: router.query.user})
+                    :
+                    await getPushNotifications({skip: list.length, search})
             if(addedList.length>0)
                 setList([...list, ...addedList])
             else
@@ -64,11 +75,7 @@ const Notifications = React.memo((props) => {
     }
     useEffect(()=>{
         (async()=>{
-            if(initialRender.current) {
-                initialRender.current = false;
-            } else {
-                getList()
-            }
+            if(!initialRender.current) getList()
         })()
     },[page])
     const handlerSwipe = useSwipeable({
@@ -82,6 +89,26 @@ const Notifications = React.memo((props) => {
         },
         delta: 80
     });
+    const { search } = props.app;
+    const { setSearch } = props.appActions;
+    let handleSearch = (event) => {
+        setSearch(event.target.value)
+    };
+    let [searchTimeOut, setSearchTimeOut] = useState(null);
+    useEffect(()=>{
+        (async()=>{
+            if(initialRender.current) {
+                initialRender.current = false;
+            } else if(page===0||profile.role==='admin'&&!router.query.user){
+                if (searchTimeOut)
+                    clearTimeout(searchTimeOut)
+                searchTimeOut = setTimeout(async () => {
+                    await getList()
+                }, 500)
+                setSearchTimeOut(searchTimeOut)
+            }
+        })()
+    },[search])
     return (
         <App setUnreadP={setUnreadP} pageName='Чаты/Уведомления' paginationWork={paginationWork} checkPagination={checkPagination} list={list} setList={setList} page={page} handlerSwipe={handlerSwipe}>
             <Head>
@@ -95,35 +122,82 @@ const Notifications = React.memo((props) => {
                 <link rel='canonical' href={`${urlMain}/notifications`}/>
             </Head>
             <div className={classesPageList.page} style={{paddingTop: 0}}>
-                <Tabs
-                    className={classesPageList.stickyTab}
-                    value={page}
-                    onChange={handlePage}
-                    indicatorColor='primary'
-                    textColor='primary'
-                    centered
-                >
-                    <Tab label={<Badge color='secondary' variant='dot' invisible={!unreadP[0]}>Чаты</Badge>} />
-                    <Tab label={<Badge color='secondary' variant='dot' invisible={!unreadP[1]}>Уведомления</Badge>} />
-                </Tabs>
+                <div className={classesPageList.stickyTab} id='scroll-hide'>
+                    <Tabs
+                        value={page}
+                        onChange={handlePage}
+                        indicatorColor='primary'
+                        textColor='primary'
+                        centered
+                    >
+                        <Tab label={<Badge color='secondary' variant='dot' invisible={!unreadP[0]}>Чаты</Badge>} />
+                        <Tab label={<Badge color='secondary' variant='dot' invisible={!unreadP[1]}>Уведомления</Badge>} />
+                    </Tabs>
+                    {
+                        page===0||profile.role==='admin'&&!router.query.user?
+                            <Input className='SearchField'
+                                   type={'login'}
+                                   placeholder='Поиск...'
+                                   value={search}
+                                   onChange={handleSearch}
+                                   endAdornment={
+                                       search?
+                                           <InputAdornment position='end'>
+                                               <IconButton aria-label='Search' onClick={()=>{setSearch('');}}>
+                                                   <CancelIcon />
+                                               </IconButton>
+                                           </InputAdornment>
+                                           :
+                                           null
+                                   }
+                                   startAdornment={
+                                       <InputAdornment position='end'>
+                                           <SearchIcon/>
+                                       </InputAdornment>
+                                   }
+                            />
+                            :
+                            null
+                    }
+                </div>
+                {
+                    page===1&&profile.role==='admin'&&!router.query.user?
+                        <CardPushNotification setList={setList} list={list}/>
+                        :
+                        null
+                }
                 {
                     list?list.map((element, idx)=> {
                         if(element) {
-                            if (page===1&&idx<=data.limit)
-                                return <CardNotification list={list} setList={setList} element={element} key={element._id}/>
+                            if (idx<=data.limit)
+                                if(page===0)
+                                    return <CardChat list={list} _user={router.query.user} element={element} key={element._id}/>
+                                else {
+                                    if (profile.role !== 'admin' || router.query.user)
+                                        return <CardNotification list={list} setList={setList} element={element}
+                                                                 key={element._id}/>
+                                    else
+                                        return <CardPushNotification element={element}/>
+                                }
                             else
                                 return (
                                 <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height}
                                           offset={[height, 0]} debounce={0} once={true}
                                           placeholder={<CardPlaceholder height={height}/>}>
                                     {
-                                        page === 0 && element.part1 ?
-                                            <CardChat _user={router.query.user} element={element} key={element._id}/>
-                                            :
-                                            page === 1 && element.whom ?
-                                                <CardNotification list={list} setList={setList} element={element} key={element._id}/>
+                                        page === 0 ?
+                                            element.part1?
+                                                <CardChat list={list} _user={router.query.user} element={element} key={element._id}/>
                                                 :
                                                 null
+                                            :
+                                            page === 1 && (profile.role!=='admin'||router.query.user)?
+                                                element.whom?
+                                                    <CardNotification list={list} setList={setList} element={element} key={element._id}/>
+                                                    :
+                                                    null
+                                                :
+                                                <CardPushNotification element={element}/>
                                     }
                                 </LazyLoad>
                             )
@@ -164,9 +238,12 @@ Notifications.getInitialProps = async function(ctx) {
             page,
             limit,
             list: !page?
-                await getChats({skip: 0, user: ctx.query.user},ctx.req?await getClientGqlSsr(ctx.req):undefined)
+                await getChats({skip: 0, user: ctx.query.user, limit},ctx.req?await getClientGqlSsr(ctx.req):undefined)
                 :
-                await getNotifications({skip: 0, user: ctx.query.user, limit},ctx.req?await getClientGqlSsr(ctx.req):undefined)
+                'admin'!==ctx.store.getState().user.profile.role||ctx.query.user?
+                    await getNotifications({skip: 0, user: ctx.query.user, limit},ctx.req?await getClientGqlSsr(ctx.req):undefined)
+                    :
+                    await getPushNotifications({search: '', skip: 0},ctx.req?await getClientGqlSsr(ctx.req):undefined)
         }
     };
 };
@@ -174,6 +251,7 @@ Notifications.getInitialProps = async function(ctx) {
 function mapStateToProps (state) {
     return {
         user: state.user,
+        app: state.app,
     }
 }
 

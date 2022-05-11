@@ -49,6 +49,7 @@ const App = React.memo(props => {
     const { showSnackBar } = props.snackbarActions;
     const router = useRouter();
     let geoRef = useRef();
+    let prevScrollpos = useRef();
     useEffect( ()=>{
         if(authenticated&&!profile.role)
             setProfile()
@@ -64,6 +65,21 @@ const App = React.memo(props => {
     useEffect( ()=>{
         (async ()=>{
             if(process.browser) {
+                let scrollHide = (document.getElementById('scroll-hide'))
+                if(scrollHide) {
+                    let appBody = (document.getElementsByClassName('App-body'))[0]
+                    prevScrollpos.current = appBody.offsetTop;
+                    setTimeout(()=>{
+                        appBody.addEventListener('scroll', () => {
+                            let currentScrollPos = appBody.scrollTop;
+                            if (prevScrollpos.current > currentScrollPos)
+                                scrollHide.style.top = '0';
+                            else
+                                scrollHide.style.top = `-${scrollHide.offsetHeight}px`;
+                            prevScrollpos.current = currentScrollPos;
+                        })
+                    }, 100)
+                }
                 window.addEventListener('offline', ()=>{showSnackBar('Нет подключения к Интернету', 'error')})
                 if(profile.role) {
                     if (navigator.geolocation) {
@@ -115,7 +131,7 @@ const App = React.memo(props => {
                     ||
                     (url.includes('user')||url.includes('subcategories'))&&sessionStorage.scrollPostionName==='user'
                     ||
-                    (url.includes('user')||url.includes('order')||url.includes('notifications'))&&url!=='/orders'&&sessionStorage.scrollPostionName==='notification'
+                    (url.includes('user')||url.includes('order')||url.includes('notifications')||url.includes('chat'))&&url!=='/orders'&&sessionStorage.scrollPostionName==='notification'
                 ))
             {
                 sessionStorage.scrollPostionStore = undefined
@@ -126,7 +142,7 @@ const App = React.memo(props => {
         }
         const routeChangeComplete = (url) => {
             if(sessionStorage.scrollPostionName&&(
-                    url==='/notifications?page=1'&&sessionStorage.scrollPostionName==='notification'
+                    url.includes('/notifications')&&sessionStorage.scrollPostionName==='notification'
                     ||
                     url.includes('/orders')&&sessionStorage.scrollPostionName==='order'
                     ||

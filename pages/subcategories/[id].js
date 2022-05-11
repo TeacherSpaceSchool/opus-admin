@@ -89,22 +89,24 @@ const Subcategories = React.memo((props) => {
             </Head>
             {
                 data.searchWords&&data.searchWords.length?
-                    <div className={classesOrder.divChip} style={{paddingTop: 72}}>
-                        {
-                            data.searchWords.map((element, idx)=> {
-                                    if(element.includes(search))
-                                        return <Chip
-                                            key={`searchWords${idx}`}
-                                            color={search===element?'primary':'default'}
-                                            className={classesOrder.chip}
-                                            onClick={()=>{
-                                                setSearch(element)
-                                            }}
-                                            label={element}
-                                        />
-                                }
-                            )
-                        }
+                    <div className={classesOrder.stickyDiv}>
+                        <div className={classesOrder.divChip} style={{paddingTop: 72}}>
+                            {
+                                data.searchWords.map((element, idx)=> {
+                                        if(element.includes(search))
+                                            return <Chip
+                                                key={`searchWords${idx}`}
+                                                color={search===element?'primary':'default'}
+                                                className={classesOrder.chip}
+                                                onClick={()=>{
+                                                    setSearch(element)
+                                                }}
+                                                label={element}
+                                            />
+                                    }
+                                )
+                            }
+                        </div>
                     </div>
                     :
                     null

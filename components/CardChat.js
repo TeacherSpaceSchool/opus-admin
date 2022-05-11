@@ -12,7 +12,7 @@ const date = new Date()
 const CardChat = React.memo((props) => {
     const classesCard = cardStyle();
     const classesChat = chatStyle();
-    const { element, _user } = props;
+    const { element, _user, list } = props;
     const { isMobileApp } = props.app;
     const { profile } = props.user;
     let [who] = useState(_user?_user===element.part1._id?element.part2:element.part1:profile._id===element.part1._id?element.part2:element.part1);
@@ -25,7 +25,13 @@ const CardChat = React.memo((props) => {
             as={`/chat/${element._id}?${_user?`user=${_user}`:''}`}
 
         >
-            <Card className={isMobileApp?classesCard.cardM:classesCard.cardD}>
+            <Card className={isMobileApp?classesCard.cardM:classesCard.cardD}
+                  onClick={()=>{
+                      let appBody = (document.getElementsByClassName('App-body'))[0]
+                      sessionStorage.scrollPostionStore = appBody.scrollTop
+                      sessionStorage.scrollPostionName = 'notification'
+                      sessionStorage.scrollPostionLimit = list.length
+                  }}>
                 <CardContent>
                     <CardActionArea>
                         <div className={classesChat.rowChat}>
@@ -39,7 +45,7 @@ const CardChat = React.memo((props) => {
                                 <div className={classesChat.nameChat}>
                                     {who.name}
                                 </div>
-                                <div className={classesChat.textChat} style={{ display: '-webkit-box', '-webkit-line-clamp': '5', overflow: 'hidden', '-webkit-box-orient': 'vertical'  }}>
+                                <div className={classesChat.textChat} style={{ display: '-webkit-box', WebkitLineClamp: '5', overflow: 'hidden', WebkitBoxOrient: 'vertical'  }}>
                                     {element.lastMessage?element.lastMessage.type==='text'?element.lastMessage.text:element.lastMessage.type==='image'?'Изображение':'Новый чат':'Новый чат'}
                                 </div>
                             </div>

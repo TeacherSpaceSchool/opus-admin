@@ -25,15 +25,15 @@ export const getChat = async(_id, client)=>{
     }
 }
 
-export const getChats = async({user, skip}, client)=>{
+export const getChats = async({search, user, skip, limit}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .query({
-                variables: {user, skip},
+                variables: {user, search, skip, limit},
                 query: gql`
-                    query ($user: ID, $skip: Int!) {
-                        chats(user: $user, skip: $skip) {
+                    query ($search: String, $user: ID, $skip: Int!, $limit: Int) {
+                        chats(search: $search, user: $user, skip: $skip, limit: $limit) {
                             _id
                             updatedAt
                             part1 {_id name avatar}

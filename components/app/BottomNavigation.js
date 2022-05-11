@@ -14,7 +14,6 @@ import Sign from '../dialog/Sign'
 import { makeStyles } from '@material-ui/core/styles';
 import { useRouter } from 'next/router';
 import Confirmation from '../../components/dialog/Confirmation'
-import NotificationsIcon from '@material-ui/icons/Notifications';
 
 const iphoneStyle = makeStyles({
     root: {
@@ -78,7 +77,7 @@ const MyBottomNavigation = React.memo((props) => {
                 else
                     Router.push('/')
             }}/>
-            <BottomNavigationAction label='Заказы' icon={<Badge color='secondary' variant='dot' invisible={profile.role==='admin'||!unreadBN.order}><ViewListIcon /></Badge>}
+            <BottomNavigationAction label='Заказы' icon={<Badge color='secondary' variant='dot' invisible={!unreadBN.order}><ViewListIcon /></Badge>}
                                     onClick={()=>{
                                         if(router.asPath==='/order/new') {
                                             const action = async() => Router.push('/orders')
@@ -100,28 +99,28 @@ const MyBottomNavigation = React.memo((props) => {
                                             Router.push('/orders')
                                     }}
             />
-            <BottomNavigationAction label={profile.role==='admin'?'Уведомления':'Чаты'}
-                                    icon={<Badge color='secondary' variant='dot' invisible={profile.role==='admin'||!unreadBN.notifications0&&!unreadBN.notifications1}>{profile.role==='admin'?<NotificationsIcon/>:<QuestionAnswerIcon/>}</Badge>}
+            <BottomNavigationAction label='Чаты'
+                                    icon={<Badge color='secondary' variant='dot' invisible={!unreadBN.notifications0&&!unreadBN.notifications1}><QuestionAnswerIcon/></Badge>}
                                     onClick={()=>{
                                         if(authenticated) {
                                             if (router.asPath === '/order/new') {
-                                                const action = async () => Router.push(`/${profile.role === 'admin' ? 'pushnotifications' : 'notifications'}?page=${unreadBN.notifications1 ? 1 : 0}`)
+                                                const action = async () => Router.push(`/notifications?page=${unreadBN.notifications1 ? 1 : 0}`)
                                                 setMiniDialog('Выйти из заказа?', <Confirmation action={action}/>)
                                                 showMiniDialog(true)
                                             }
                                             else if(save&&router.query.change==='true') {
                                                 const action = async() => {
                                                     await save()
-                                                    Router.push(`/${profile.role === 'admin' ? 'pushnotifications' : 'notifications'}?page=${unreadBN.notifications1 ? 1 : 0}`)
+                                                    Router.push(`/notifications?page=${unreadBN.notifications1 ? 1 : 0}`)
                                                 }
                                                 const actionCancel = async() => {
-                                                    Router.push(`/${profile.role === 'admin' ? 'pushnotifications' : 'notifications'}?page=${unreadBN.notifications1 ? 1 : 0}`)
+                                                    Router.push(`/notifications?page=${unreadBN.notifications1 ? 1 : 0}`)
                                                 }
                                                 setMiniDialog('Сохранить изменения?', <Confirmation action={action} actionCancel={actionCancel}/>)
                                                 showMiniDialog(true)
                                             }
                                             else
-                                                Router.push(`/${profile.role === 'admin' ? 'pushnotifications' : 'notifications'}?page=${unreadBN.notifications1 ? 1 : 0}`)
+                                                Router.push(`/notifications?page=${unreadBN.notifications1 ? 1 : 0}`)
                                         }
                                         else {
                                             setMiniDialog('', <Sign/>)
