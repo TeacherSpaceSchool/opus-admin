@@ -70,14 +70,16 @@ const App = React.memo(props => {
                     let appBody = (document.getElementsByClassName('App-body'))[0]
                     prevScrollpos.current = appBody.offsetTop;
                     setTimeout(()=>{
-                        appBody.addEventListener('scroll', () => {
+                        const onScroll = () => {
                             let currentScrollPos = appBody.scrollTop;
                             if (prevScrollpos.current > currentScrollPos)
                                 scrollHide.style.top = '0';
                             else
                                 scrollHide.style.top = `-${scrollHide.offsetHeight}px`;
                             prevScrollpos.current = currentScrollPos;
-                        })
+                        }
+                        appBody.addEventListener('scroll', onScroll)
+                        return () => appBody.removeEventListener('scroll', onScroll);
                     }, 100)
                 }
                 window.addEventListener('offline', ()=>{showSnackBar('Нет подключения к Интернету', 'error')})

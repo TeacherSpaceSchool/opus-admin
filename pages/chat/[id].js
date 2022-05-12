@@ -40,16 +40,24 @@ const Chat = React.memo((props) => {
             if (sendedMessage) {
                 setList([sendedMessage, ...list])
                 setMessage('')
+                setBottomChatHeight(bottomChatRef.current.offsetHeight);
+                listMessageChatRef.current.scroll({top: 0, left: 0, behavior: 'instant'});
             }
         }
     }
     let imageRef = useRef(null);
     let listMessageChatRef = useRef(null);
+    let bottomChatRef = useRef(null);
+    let [bottomChatHeight, setBottomChatHeight] = useState(69);
     let handleChangeImage = (async (event) => {
         if(event.target.files[0]&&event.target.files[0].size / 1024 / 1024 < 50) {
             let sendedMessage = await sendMessage({type: 'image', file: event.target.files[0], chat: router.query.id})
-            if(sendedMessage)
+            if(sendedMessage) {
                 setList([sendedMessage, ...list])
+                setMessage('')
+                setBottomChatHeight(bottomChatRef.current.offsetHeight);
+                listMessageChatRef.current.scroll({top: 0, left: 0, behavior: 'instant'});
+            }
         } else {
             showSnackBar('Файл слишком большой')
         }
@@ -59,8 +67,8 @@ const Chat = React.memo((props) => {
             const onScroll = async () => {
                 if(tick.current&&paginationWork.current) {
                     tick.current = false
-                    let scrolledTop = !(listMessageChatRef.current.scrollHeight - (listMessageChatRef.current.clientHeight - listMessageChatRef.current.scrollTop))
-                    if (scrolledTop) {
+                    let scrolledTop = listMessageChatRef.current.scrollHeight - (listMessageChatRef.current.clientHeight - listMessageChatRef.current.scrollTop)
+                    if (scrolledTop<=1) {
                         await showLoad(true)
                         let addedList = await getMessages({skip: listLength.current, chat: router.query.id})
                         if (addedList.length > 0) {
@@ -109,7 +117,11 @@ const Chat = React.memo((props) => {
                                 null
                         }
                     </div>
-                    <div className={classesChat.listMessageChat} ref={listMessageChatRef} style={isApple?{height: 'calc(100vh - 180px)'}:{}}>
+                    <div
+                        className={classesChat.listMessageChat}
+                        ref={listMessageChatRef}
+                        style={isApple?{height: `calc(100vh - ${56+50+14+bottomChatHeight}px)`}:{height: `calc(100vh - ${56+50+bottomChatHeight}px)`}}
+                    >
                         {
                             list?list.map((element)=> {
                                 let createdAt = new Date(element.createdAt)
@@ -138,7 +150,7 @@ const Chat = React.memo((props) => {
                                                             element.type==='link'?
                                                                 <a href={element.text}>{element.text}</a>
                                                                 :
-                                                            null
+                                                                null
                                                 }
                                                 <div className={classesChat.timeRightBubleChat}>
                                                     {today?pdHHMM(element.createdAt):pdDDMMYYHHMM(element.createdAt)}
@@ -180,18 +192,23 @@ const Chat = React.memo((props) => {
                     </div>
                     {
                         !router.query.user?
-                            <div className={classesChat.bottomChat}>
+                            <div className={classesChat.bottomChat} ref={bottomChatRef}>
                                 <IconButton onClick={()=>{imageRef.current.click()}}>
                                     <AttachFileIcon/>
                                 </IconButton>
                                 <Input
                                     value={message}
-                                    onChange={(event)=>{setMessage(event.target.value)}}
+                                    onChange={(event)=>{
+                                        setMessage(event.target.value)
+                                        setBottomChatHeight(bottomChatRef.current.offsetHeight)
+                                    }}
                                     placeholder='Написать сообщение...'
                                     className={classesChat.inputBottomChat}
-                                    onKeyPress={event => {
-                                        if (event.key === 'Enter') {
-                                            sendTextMessage()
+                                    multiline={true}
+                                    rowsMax='4'
+                                    onKeyUp={event => {
+                                        if (['Backspace', 'Enter'].includes(event.key)) {
+                                            setBottomChatHeight(bottomChatRef.current.offsetHeight)
                                         }
                                     }}
                                 />

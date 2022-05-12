@@ -73,12 +73,17 @@ export default makeStyles({
         maxWidth: 800
     },
     bottomChat: {
-        height: 60,
         display: 'flex',
         flexDirection: 'row',
         background: 'white',
         borderTop: '1px solid #aeaeae',
-        alignItems: 'center'
+        alignItems: 'center',
+        padding: '10px 0px',
+        width: '100%',
+        position: 'fixed',
+        height: 'auto',
+        maxWidth: 800,
+        bottom: 56
     },
     inputBottomChat: {
         width: '100%'
