@@ -19,8 +19,6 @@ const CardChat = React.memo((props) => {
     let [updatedAt] = useState(new Date(element.updatedAt))
     let [today] = useState(updatedAt.getDate()===date.getDate()&&updatedAt.getFullYear()===date.getFullYear()&&updatedAt.getMonth()===date.getMonth());
     let unread = profile._id===element.part1._id?element.part1Unread:element.part2Unread
-    if(!who)
-        console.log(element)
     return (
         <Link
             href={{pathname: '/chat/[id]', query: _user?{user: _user}:{}}}
