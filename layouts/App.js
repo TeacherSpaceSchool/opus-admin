@@ -37,7 +37,7 @@ const App = React.memo(props => {
     const { setIsMobileApp, setShowLightbox, setIsApple } = props.appActions;
     const { profile, authenticated } = props.user;
     const { load, showLightbox, imagesLightbox, indexLightbox, ua, showWelcomePage, expired } = props.app;
-    let { checkPagination, searchShow, list, setList, page, setUnreadP, setGeo, handlerSwipe, save, paginationWork, backBarShow, pageName } = props;
+    let { checkPagination, searchShow, list, setList, page, setUnreadP, setGeo, handlerSwipe, save, paginationWork, backBarShow, pageName, adminChat } = props;
     const [_expired, _setExpired] = useState(expired);
     const [reloadPage, setReloadPage] = useState(false);
     const [snackBarNotify, setSnackBarNotify] = useState({});
@@ -192,7 +192,7 @@ const App = React.memo(props => {
             subscriptionDataRes.data &&
             subscriptionDataRes.data.reloadData
         ) {
-            if (router.pathname==='/notifications'&&subscriptionDataRes.data.reloadData.notification&&subscriptionDataRes.data.reloadData.notification.type!==99||subscriptionDataRes.data.reloadData.message&&(router.pathname.includes('chat')&&(router.query.id===subscriptionDataRes.data.reloadData.message.chat||subscriptionDataRes.data.reloadData.mailing)||router.pathname==='/notifications')) {
+            if (router.pathname==='/notifications'&&subscriptionDataRes.data.reloadData.notification&&subscriptionDataRes.data.reloadData.notification.type!==99||subscriptionDataRes.data.reloadData.message&&(router.pathname.includes('chat')&&(router.query.id===subscriptionDataRes.data.reloadData.message.chat||subscriptionDataRes.data.reloadData.mailing&&adminChat)||router.pathname==='/notifications')) {
                 if(subscriptionDataRes.data.reloadData.notification) {
                     if ([0, 1, 2, 3, 4, 5].includes(subscriptionDataRes.data.reloadData.notification.type)) {
                         if (page === 1) {
@@ -210,11 +210,12 @@ const App = React.memo(props => {
                     if (router.pathname === '/notifications'){
                         if (page === 0) {
                             for(let i=0; i<list.length; i++) {
-                                if(list[i]._id===subscriptionDataRes.data.reloadData.message.chat){
+                                if(list[i]._id===subscriptionDataRes.data.reloadData.message.chat||profile.role!=='admin'&&list[i].part1.name==='OPUS'&&subscriptionDataRes.data.reloadData.mailing){
                                     list[i].lastMessage = {type: subscriptionDataRes.data.reloadData.message.type, text: subscriptionDataRes.data.reloadData.message.text}
                                     list[i].part1Unread = true
                                     list[i].part2Unread = true
                                     list[i] = {...list[i]}
+                                    readUser('notifications0')
                                 }
                             }
                             setList([...list])

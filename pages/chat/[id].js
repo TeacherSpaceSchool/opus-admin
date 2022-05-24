@@ -63,7 +63,7 @@ const Chat = React.memo((props) => {
         }
     })
     useEffect(() => {
-        if(listMessageChatRef.current) {
+        if(process.browser&&listMessageChatRef.current) {
             const onScroll = async () => {
                 if(tick.current&&paginationWork.current) {
                     tick.current = false
@@ -86,8 +86,9 @@ const Chat = React.memo((props) => {
             return () => listMessageChatRef.current.removeEventListener('scroll', onScroll);
         }
     }, [process.browser]);
+
     return (
-        <App pageName={data.chat?who.name:'Ничего не найдено'} list={list} setList={setList}>
+        <App adminChat={data.adminChat} pageName={data.chat?who.name:'Ничего не найдено'} list={list} setList={setList}>
             <Head>
                 <title>{data.chat?who.name:'Ничего не найдено'}</title>
                 <meta property='og:title' content={data.chat?who.name:'Ничего не найдено'} />
@@ -244,10 +245,13 @@ Chat.getInitialProps = async function(ctx) {
             ctx.res.end()
         } else
             Router.push('/')
+
+    const chat = await getChat(ctx.query.id, ctx.req?await getClientGqlSsr(ctx.req):undefined)
     return {
         data: {
             list: await getMessages({chat: ctx.query.id, skip: 0}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
-            chat: await getChat(ctx.query.id, ctx.req?await getClientGqlSsr(ctx.req):undefined)
+            chat,
+            adminChat: chat.part1.login==='000000000'
         }
     };
 };
