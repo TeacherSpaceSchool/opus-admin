@@ -37,7 +37,7 @@ export default async (ctx)=>{
                     let end
                     let expired
                     for(let i=0; i<ctx.store.getState().user.profile.specializations.length; i++) {
-                        if(!ctx.store.getState().app.expired) {
+                        if(!ctx.store.getState().app.expired&&ctx.store.getState().user.profile.specializations[i].enable) {
                             end = new Date(ctx.store.getState().user.profile.specializations[i].end)
                             expired = (end - now) / 1000 / 60 / 60 / 24
                             if (expired < 5) {

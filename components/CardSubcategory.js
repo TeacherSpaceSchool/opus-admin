@@ -200,7 +200,7 @@ const CardSubcategory = React.memo((props) => {
             :
             !authenticated&&order?
                 <Card className={classesCategory.card} onClick={()=>{
-                    setMiniDialog('', <Sign/>)
+                    setMiniDialog('Вход', <Sign/>)
                     showMiniDialog(true)
                 }}>
                     <img

@@ -16,6 +16,7 @@ export const getApplication = async({_id}, client)=>{
                             documents
                             comments
                             info
+                            verification
                             unread
                             user {_id name}
                             category {_id name}
@@ -30,20 +31,21 @@ export const getApplication = async({_id}, client)=>{
     }
 }
 
-export const getApplications = async({status, search, skip, limit}, client)=>{
+export const getApplications = async({status, search, skip, limit, verification}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .query({
-                variables: {status, search, skip, limit},
+                variables: {status, search, skip, limit, verification},
                 query: gql`
-                    query ($status: String, $search: String, $skip: Int!, $limit: Int) {
-                        applications(status: $status, search: $search, skip: $skip, limit: $limit) {
+                    query ($status: String, $search: String, $skip: Int!, $limit: Int, $verification: Boolean) {
+                        applications(status: $status, search: $search, skip: $skip, limit: $limit, verification: $verification) {
                             _id
                             createdAt
                             status
                             documents
                             comments
+                            verification
                             info
                             unread
                             user {_id name}
@@ -59,15 +61,15 @@ export const getApplications = async({status, search, skip, limit}, client)=>{
     }
 }
 
-export const getApplicationsCount = async({search}, client)=>{
+export const getApplicationsCount = async({search, verification}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .query({
-                variables: {search},
+                variables: {search, verification},
                 query: gql`
-                    query ($search: String) {
-                        applicationsCount(search: $search)
+                    query ($search: String, $verification: Boolean) {
+                        applicationsCount(search: $search, verification: $verification)
                     }`,
             })
         return res.data.applicationsCount
@@ -82,8 +84,8 @@ export const addApplication = async(element)=>{
         let res = await client.mutate({
             variables: element,
             mutation : gql`
-                    mutation ($uploads: [Upload], $info: String!, $category: ID!, $subcategory: ID!) {
-                        addApplication(info: $info, uploads: $uploads, category: $category, subcategory: $subcategory)
+                    mutation ($verification: Boolean!, $uploads: [Upload], $info: String!, $category: ID!, $subcategory: ID!) {
+                        addApplication(verification: $verification, info: $info, uploads: $uploads, category: $category, subcategory: $subcategory)
                     }`})
         return res.data.addApplication
     } catch(err){

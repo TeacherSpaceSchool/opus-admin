@@ -124,6 +124,7 @@ const Order = React.memo((props) => {
     let [dateEnd, setDateEnd] = useState(data.object&&data.object.dateEnd?pdtDatePickerTime(data.object.dateEnd):null);
     let [price, setPrice] = useState(data.object&&data.object.price?data.object.price:'');
     let [urgency, setUrgency] = useState(data.object&&data.object.urgency?data.object.urgency:false);
+    let [verificationExecutor, setVerificationExecutor] = useState(data.object&&data.object.verificationExecutor?data.object.verificationExecutor:false);
     let imageRef = useRef(null);
     let [images, setDocuments] = useState(data.object&&data.object.images?[...data.object.images]:[]);
     let [uploads, setUploads] = useState([]);
@@ -547,6 +548,21 @@ const Order = React.memo((props) => {
                                                             }
                                                             label='Срочный заказ'
                                                         />
+                                                        {
+                                                            !router.query.executor?
+                                                                <FormControlLabel
+                                                                    control={
+                                                                        <Checkbox
+                                                                            checked={verificationExecutor}
+                                                                            onChange={()=>setVerificationExecutor(!verificationExecutor)}
+                                                                            color='primary'
+                                                                        />
+                                                                    }
+                                                                    label='Подтвержденный исполнитель'
+                                                                />
+                                                                :
+                                                                null
+                                                        }
                                                     </div>
                                                     <TextField
                                                         multiline={true}
@@ -733,6 +749,15 @@ const Order = React.memo((props) => {
                                                             null
                                                     }
                                                     <div className={classesOrder.price}>{price}</div>
+                                                    {
+                                                        verificationExecutor&&!profile.verification&&profile._id!==data.object.customer._id?
+                                                            <>
+                                                            <br/>
+                                                            <b style={{color: 'red'}}>Только подтвержденный исполнитель</b>
+                                                            </>
+                                                            :
+                                                            null
+                                                    }
                                                 </CardContent>
                                             </Card>
                                             <Card className={classesOrder.card}>
@@ -803,7 +828,7 @@ const Order = React.memo((props) => {
                                                         apartment?
                                                             <div className={classesPage.row}>
                                                                 <div className={classesPage.nameField}>
-                                                                    Квартира:&nbsp;
+                                                                    № дома или квартиры:&nbsp;
                                                                 </div>
                                                                 <div className={classesPage.value}>
                                                                     {apartment}
@@ -885,25 +910,31 @@ const Order = React.memo((props) => {
                                                             }
                                                             else {
                                                                 if(!authenticated) {
-                                                                    setMiniDialog('', <Sign/>)
+                                                                    setMiniDialog('Вход', <Sign/>)
                                                                     showMiniDialog(true)
                                                                 }
                                                                 else {
-                                                                    if(data.allowResponseOrder) {
-                                                                        if (!profile.name) {
-                                                                            Router.push(`/user/${profile._id}`)
-                                                                        }
-                                                                        else {
-                                                                            setMiniDialog('Взять заказ', <ResponseOrder
-                                                                                _id={router.query.id}
-                                                                                setShowResponseOrder={setShowResponseOrder}/>)
-                                                                            showMiniDialog(true)
-                                                                        }
+                                                                    if(verificationExecutor&&!profile.verification){
+                                                                        Router.push(`/application/new?category=${data.object.category._id}&subcategory=${data.object.subcategory._id}&verification=1`)
                                                                     }
                                                                     else {
-                                                                        Router.push(
-                                                                            `/application/new?categoryId=${data.object.category._id}&categoryName=${data.object.category.name}&subcategoryId=${data.object.subcategory._id}&subcategoryName=${data.object.subcategory.name}`
-                                                                        )
+                                                                        if (data.allowResponseOrder) {
+                                                                            if (!profile.name) {
+                                                                                Router.push(`/user/${profile._id}`)
+                                                                            }
+                                                                            else {
+                                                                                setMiniDialog('Взять заказ',
+                                                                                    <ResponseOrder
+                                                                                        _id={router.query.id}
+                                                                                        setShowResponseOrder={setShowResponseOrder}/>)
+                                                                                showMiniDialog(true)
+                                                                            }
+                                                                        }
+                                                                        else {
+                                                                            Router.push(
+                                                                                `/application/new?categoryId=${data.object.category._id}&categoryName=${data.object.category.name}&subcategoryId=${data.object.subcategory._id}&subcategoryName=${data.object.subcategory.name}`
+                                                                            )
+                                                                        }
                                                                     }
                                                                 }
                                                             }
@@ -948,6 +979,7 @@ const Order = React.memo((props) => {
                                                     dateEnd: !dateEnd?null:dateEnd,
                                                     price: `${price}${price==='Договорная цена'||price.includes('сом')?'':' сом'}`,
                                                     urgency,
+                                                    verificationExecutor,
                                                     uploads,
                                                     address,
                                                     apartment,
@@ -1002,6 +1034,7 @@ const Order = React.memo((props) => {
                                                     if(address!==data.object.address)editElement.address = address
                                                     if(apartment!==data.object.apartment)editElement.apartment = apartment
                                                     if(urgency!==data.object.urgency)editElement.urgency = urgency
+                                                    if(verificationExecutor!==data.object.verificationExecutor)editElement.verificationExecutor = verificationExecutor
                                                     if(dateStart!==data.object.dateStart)editElement.dateStart = dateStart
                                                     if(dateEnd!=data.object.dateEnd)editElement.dateEnd = !dateEnd?null:dateEnd
                                                     if(dateStart!=data.object.dateStart)editElement.dateStart = !dateStart?null:dateStart
@@ -1126,6 +1159,7 @@ Order.getInitialProps = async function(ctx) {
         dateEnd: null,
         price: '',
         urgency: false,
+        verificationExecutor: false,
         images: []
     }:await getOrder({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
     let profile = ctx.store.getState().user.profile
@@ -1141,7 +1175,7 @@ Order.getInitialProps = async function(ctx) {
         for(let i=0; i<profile.specializations.length; i++) {
             allowResponseOrder = profile.specializations[i].subcategory===object.subcategory._id
             if(allowResponseOrder) {
-                if(profile.specializations[i].end<new Date()||profile.specializations[i].enable) {
+                if(profile.specializations[i].end<new Date()||!profile.specializations[i].enable) {
                     showResponseOrder = false
                 }
                 break

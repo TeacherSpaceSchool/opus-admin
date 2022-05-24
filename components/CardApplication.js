@@ -5,6 +5,7 @@ import cardStyle from '../src/styleMUI/card'
 import { connect } from 'react-redux'
 import {pdDDMMYYHHMM} from '../src/lib'
 import Link from 'next/link';
+import CardActionArea from '@material-ui/core/CardActionArea';
 
 const CardApplication = React.memo((props) => {
     const classesCard = cardStyle();
@@ -21,6 +22,7 @@ const CardApplication = React.memo((props) => {
                     sessionStorage.scrollPostionLimit = list.length
                 }
             }}>
+                <CardActionArea>
                 <CardContent>
                     <div className={classesCard.status} style={{background: element.status==='принят'?'green':'orange'}}>{element.status}</div>
                     {
@@ -29,18 +31,35 @@ const CardApplication = React.memo((props) => {
                             :
                             null
                     }
+                    {
+                        element.verification?
+                            <div className={classesCard.nameField}>
+                                <h3>
+                                    Подтвержденние исполнителя
+                                </h3>
+                            </div>
+                            :
+                            null
+                    }
                     <div className={classesCard.row}>
                         <div className={classesCard.nameField}>Создан:&nbsp;</div>
                         <div className={classesCard.value}>{pdDDMMYYHHMM(element.createdAt)}</div>
                     </div>
-                    <div className={classesCard.row}>
-                        <div className={classesCard.nameField}>Категория:&nbsp;</div>
-                        <div className={classesCard.value}>{element.category.name}</div>
-                    </div>
-                    <div className={classesCard.row}>
-                        <div className={classesCard.nameField}>Подкатегория:&nbsp;</div>
-                        <div className={classesCard.value}>{element.subcategory.name}</div>
-                    </div>
+                    {
+                        !element.verification?
+                            <>
+                            <div className={classesCard.row}>
+                                <div className={classesCard.nameField}>Категория:&nbsp;</div>
+                                <div className={classesCard.value}>{element.category.name}</div>
+                            </div>
+                            <div className={classesCard.row}>
+                                <div className={classesCard.nameField}>Подкатегория:&nbsp;</div>
+                                <div className={classesCard.value}>{element.subcategory.name}</div>
+                            </div>
+                            </>
+                            :
+                            null
+                    }
                     <div className={classesCard.row}>
                         <div className={classesCard.nameField}>Заявитель:&nbsp;</div>
                         <div className={classesCard.value}>{element.user.name}</div>
@@ -55,6 +74,7 @@ const CardApplication = React.memo((props) => {
                             null
                     }
                 </CardContent>
+            </CardActionArea>
             </Card>
         </Link>
     );

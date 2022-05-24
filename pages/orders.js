@@ -132,7 +132,7 @@ const Orders = React.memo((props) => {
             </Head>
             {
                 authenticated?
-                    <div className={classesOrder.stickyDiv}>
+                    <div className={classesOrder.stickyDiv} id='scroll-hide'>
                         {
                             profile.role==='client'?
                                 <Tabs
@@ -287,7 +287,7 @@ const Orders = React.memo((props) => {
                         !authenticated?
                             <Button
                                 onClick={()=>{
-                                    setMiniDialog('', <Sign/>)
+                                    setMiniDialog('Вход', <Sign/>)
                                     showMiniDialog(true)
                                 }}
                                 variant='contained'

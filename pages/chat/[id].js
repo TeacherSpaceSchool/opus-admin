@@ -67,7 +67,7 @@ const Chat = React.memo((props) => {
             const onScroll = async () => {
                 if(tick.current&&paginationWork.current) {
                     tick.current = false
-                    let scrolledTop = listMessageChatRef.current.scrollHeight - (listMessageChatRef.current.clientHeight - listMessageChatRef.current.scrollTop)
+                    let scrolledTop = listMessageChatRef.current.scrollHeight - (listMessageChatRef.current.offsetHeight - listMessageChatRef.current.scrollTop)
                     if (scrolledTop<=1) {
                         await showLoad(true)
                         let addedList = await getMessages({skip: listLength.current, chat: router.query.id})

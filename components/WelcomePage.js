@@ -110,7 +110,7 @@ const WelcomePage = React.memo(() => {
                         </Button>
                     }
                     nextButton={
-                        <Button size='large' onClick={handleNext} color={activeStep===3?'primary':''}>
+                        <Button size='large' onClick={handleNext} color={activeStep===3?'primary':'default'}>
                             {activeStep===3?'Начать':'Вперед'}
                             <KeyboardArrowRight />
                         </Button>

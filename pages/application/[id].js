@@ -34,9 +34,12 @@ import Link from 'next/link';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import styleCategory from '../../src/styleMUI/other/category'
+import AddIcon from '@material-ui/icons/Add';
 
 const Application = React.memo((props) => {
     const classesPage = stylePage();
+    const classesCategory = styleCategory();
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     const { data } = props;
     const { isMobileApp, isApple } = props.app;
@@ -142,58 +145,74 @@ const Application = React.memo((props) => {
                                             <>
                                             {
                                                 router.query.id==='new'?
-                                                    <>
-                                                    <br/>
-                                                    {
-                                                        !data.category?
-                                                            <Autocomplete
-                                                                options={data.categories}
-                                                                value={category}
-                                                                onChange={(event, newValue) => {
-                                                                    setCategory(newValue);
-                                                                }}
-                                                                className={classesPage.input}
-                                                                getOptionLabel={(option) => option.name}
-                                                                renderInput={(params) => <TextField error={!category} {...params} label='Выберите категорию' />}
-                                                            />
-                                                            :
-                                                            <div className={classesPage.row}>
-                                                                <div className={classesPage.nameField}>
-                                                                    Категория:&nbsp;
-                                                                </div>
-                                                                <div className={classesPage.value}>
-                                                                    {data.category.name}
-                                                                </div>
-                                                            </div>
-                                                    }
-                                                    {
-                                                        subcategories&&subcategories.length?
-                                                            <Autocomplete
-                                                                options={subcategories}
-                                                                value={subcategory}
-                                                                onChange={(event, newValue) => {
-                                                                    setSubcategory(newValue);
-                                                                }}
-                                                                className={classesPage.input}
-                                                                getOptionLabel={(option) => option.name}
-                                                                renderInput={(params) => <TextField error={!subcategory} {...params} label='Выберите подкатегорию' />}
-                                                            />
-                                                            :
-                                                            data.subcategory?
+                                                    data.object.verification?
+                                                        <>
+                                                        <br/>
+                                                        <div className={classesPage.nameField}>
+                                                        <h3>Процедура подтвержденния исполнителя</h3>
+                                                        </div>
+                                                        </>
+                                                        :
+                                                        <>
+                                                        <br/>
+                                                        {
+                                                            !data.category?
+                                                                <Autocomplete
+                                                                    options={data.categories}
+                                                                    value={category}
+                                                                    onChange={(event, newValue) => {
+                                                                        setCategory(newValue);
+                                                                    }}
+                                                                    className={classesPage.input}
+                                                                    getOptionLabel={(option) => option.name}
+                                                                    renderInput={(params) => <TextField error={!category} {...params} label='Выберите категорию' />}
+                                                                />
+                                                                :
                                                                 <div className={classesPage.row}>
                                                                     <div className={classesPage.nameField}>
-                                                                        Подкатегория:&nbsp;
+                                                                        Категория:&nbsp;
                                                                     </div>
                                                                     <div className={classesPage.value}>
-                                                                        {data.subcategory.name}
+                                                                        {data.category.name}
                                                                     </div>
                                                                 </div>
+                                                        }
+                                                        {
+                                                            subcategories&&subcategories.length?
+                                                                <Autocomplete
+                                                                    options={subcategories}
+                                                                    value={subcategory}
+                                                                    onChange={(event, newValue) => {
+                                                                        setSubcategory(newValue);
+                                                                    }}
+                                                                    className={classesPage.input}
+                                                                    getOptionLabel={(option) => option.name}
+                                                                    renderInput={(params) => <TextField error={!subcategory} {...params} label='Выберите подкатегорию' />}
+                                                                />
                                                                 :
-                                                                null
-                                                    }
-                                                    </>
+                                                                data.subcategory?
+                                                                    <div className={classesPage.row}>
+                                                                        <div className={classesPage.nameField}>
+                                                                            Подкатегория:&nbsp;
+                                                                        </div>
+                                                                        <div className={classesPage.value}>
+                                                                            {data.subcategory.name}
+                                                                        </div>
+                                                                    </div>
+                                                                    :
+                                                                    null
+                                                        }
+                                                        </>
                                                     :
                                                     <>
+                                                    {
+                                                        data.object.verification?
+                                                            <div className={classesPage.nameField}>
+                                                                <h3>Процедура подтвержденния исполнителя</h3>
+                                                            </div>
+                                                            :
+                                                            null
+                                                    }
                                                     <div className={classesPage.row}>
                                                         <div className={classesPage.nameField}>
                                                             Создан:&nbsp;
@@ -233,30 +252,37 @@ const Application = React.memo((props) => {
                                                             :
                                                             null
                                                     }
-                                                    <div className={classesPage.row}>
-                                                        <div className={classesPage.nameField}>
-                                                            Категория:&nbsp;
-                                                        </div>
-                                                        <div className={classesPage.value}>
-                                                            {data.object.category.name}
-                                                        </div>
-                                                    </div>
-                                                    <div className={classesPage.row}>
-                                                        <div className={classesPage.nameField}>
-                                                            Подкатегория:&nbsp;
-                                                        </div>
-                                                        <div className={classesPage.value}>
-                                                            {data.object.subcategory.name}
-                                                        </div>
-                                                    </div>
+                                                    {
+                                                        data.object.verification?
+                                                            null
+                                                            :
+                                                            <>
+                                                            <div className={classesPage.row}>
+                                                                <div className={classesPage.nameField}>
+                                                                    Категория:&nbsp;
+                                                                </div>
+                                                                <div className={classesPage.value}>
+                                                                    {data.object.category.name}
+                                                                </div>
+                                                            </div>
+                                                            <div className={classesPage.row}>
+                                                                <div className={classesPage.nameField}>
+                                                                    Подкатегория:&nbsp;
+                                                                </div>
+                                                                <div className={classesPage.value}>
+                                                                    {data.object.subcategory.name}
+                                                                </div>
+                                                            </div>
+                                                            </>
+                                                    }
                                                     </>
                                             }
                                             {
-                                                false?
+                                                data.object.verification?
                                                     <>
                                                     <br/>
                                                     <div className={classesPage.row}>
-                                                        <div className={classesPage.nameField}>Документы:&nbsp;&nbsp;</div>
+                                                        <div className={classesPage.nameField} style={!uploads.length&&router.query.id==='new'?{color: 'red'}:{}}>Документы*:&nbsp;&nbsp;</div>
                                                         <div className={classesPage.noteImageList}>
                                                             {
                                                                 edit?
@@ -287,8 +313,7 @@ const Application = React.memo((props) => {
                                                     :
                                                     null
                                             }
-                                            {
-                                                false?
+                                            {/*
                                                     <TextField
                                                         multiline={true}
                                                         label='Информация'
@@ -299,21 +324,31 @@ const Application = React.memo((props) => {
                                                             'aria-label': 'description',
                                                         }}
                                                     />
-                                                    :
-                                                    null
-                                            }
+                                            */}
                                             <br/>
                                             {router.query.id==='new'?
-                                                <>
-                                                <div className={classesPage.nameField}>
-                                                    Чексиз сандаган категорияларды кошуп, көбүрөөк тапшырык алыңыз!<br/>
-                                                    Бул үчүн жаңы категорияны тандап, "Подать" баскычын басыңыз.
-                                                </div>
-                                                <div className={classesPage.nameField}>
-                                                    Добавляйте неограниченное количество категорий и получайте больше заказов!<br/>
-                                                    Для этого, выберите новую категорию и нажмите "Подать"
-                                                </div>
-                                                </>
+                                                data.object.verification?
+                                                    <>
+                                                    <div className={classesPage.nameField}>
+                                                        OPUS коомчулуктун бардык мүчөлөрүнүн коопсуздугун камсыз кылууга умтулат. Идентификациялык маалыматты берүү менен сиз коомчулукта ишенимди бекемдейсиз.<br/>
+                                                        Андыктан, мамлекет тарабынан берилген ID жана сиздин квалификацияңызды тастыктаган документтерди жүктөөнү суранабыз.
+                                                    </div>
+                                                    <div className={classesPage.nameField}>
+                                                        OPUS стремится обеспечить безопасность всем участникам сообщества. Предоставляя идентификационную информацию, вы помогаете укреплять доверие в сообществе.<br/>
+                                                        Поэтому мы просим вас загрузить удостоверение личности государственного образца и документы подтверждающие ваши квалификации.
+                                                    </div>
+                                                    </>
+                                                    :
+                                                    <>
+                                                    <div className={classesPage.nameField}>
+                                                        Чексиз сандаган категорияларды кошуп, көбүрөөк тапшырык алыңыз!<br/>
+                                                        Бул үчүн жаңы категорияны тандап, "Подать" баскычын басыңыз.
+                                                    </div>
+                                                    <div className={classesPage.nameField}>
+                                                        Добавляйте неограниченное количество категорий и получайте больше заказов!<br/>
+                                                        Для этого, выберите новую категорию и нажмите "Подать"
+                                                    </div>
+                                                    </>
                                                 :
                                                 null
                                             }
@@ -448,77 +483,78 @@ const Application = React.memo((props) => {
                         </IconButton>
                     </div>
                     {
-                        edit||data.object.status==='активный'&&['manager', 'admin'].includes(profile.role)?
-                            <div className={isMobileApp?isApple?classesPage.bottomDivMA:classesPage.bottomDivM:classesPage.bottomDivD}>
-                                {
-                                    router.query.id==='new'?
-                                        <>
-                                        <Button onClick={async()=>{
-                                            if (category&&subcategory) {
-                                                const action = async() => {
-                                                    await addApplication({
-                                                        uploads,
-                                                        info,
-                                                        category: category._id,
-                                                        subcategory: subcategory._id
-                                                    })
-                                                    Router.push('/applications')
-                                                }
-                                                setMiniDialog('Подать заявку?', <Confirmation action={action}/>)
-                                                showMiniDialog(true)
-                                            } else {
-                                                showSnackBar('Заполните все красные поля')
-                                            }
-                                        }} color='primary'>
-                                            Подать
-                                        </Button>
-                                        </>
-                                        :
-                                        <>
-                                        {
-                                            edit?
-                                                <Button onClick={async()=>{
-                                                    let editElement = {_id: router.query.id}
-                                                    if(uploads.length)editElement.uploads = uploads
-                                                    if(JSON.stringify(documents)!==JSON.stringify(data.object.documents))editElement.documents = documents
-                                                    if(info!==data.object.info)editElement.info = info
-                                                    const action = async() => {
-                                                        await setApplication(editElement)
-                                                        Router.reload()
-                                                    }
-                                                    setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
-                                                    showMiniDialog(true)
-                                                }} color='primary'>
-                                                    Сохранить
-                                                </Button>
-                                                :
-                                                <Button onClick={async()=>{
-                                                    let editElement = {_id: router.query.id, approve: true}
-                                                    const action = async() => {
-                                                        await setApplication(editElement)
-                                                        Router.reload()
-                                                    }
-                                                    setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
-                                                    showMiniDialog(true)
-                                                }} color='primary'>
-                                                    Принять
-                                                </Button>
+                        router.query.id==='new'?
+                            <Button
+                                variant='contained'
+                                color='primary'
+                                className={classesCategory.cardAO}
+                                startIcon={<AddIcon />}
+                                onClick={async()=>{
+                                    if (category&&subcategory&&(!data.object.verification||uploads.length)) {
+                                        const action = async() => {
+                                            await addApplication({
+                                                uploads,
+                                                info,
+                                                category: category._id,
+                                                subcategory: subcategory._id,
+                                                verification: data.object.verification
+                                            })
+                                            Router.push('/applications')
                                         }
-                                        <Button onClick={async()=>{
-                                            const action = async() => {
-                                                await deleteApplication(router.query.id)
-                                                Router.push('/applications')
-                                            }
-                                            setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
-                                            showMiniDialog(true)
-                                        }} color='secondary' className={isMobileApp?classesPage.quickButtonM:classesPage.quickButtonD}>
-                                            Удалить
-                                        </Button>
-                                        </>
-                                }
-                            </div>
+                                        setMiniDialog('Подать заявку?', <Confirmation action={action}/>)
+                                        showMiniDialog(true)
+                                    } else {
+                                        showSnackBar('Заполните все красные поля')
+                                    }
+                                }}
+                            >
+                                Подать заявку
+                            </Button>
                             :
-                            null
+                            edit||data.object.status==='активный'&&['manager', 'admin'].includes(profile.role)?
+                                <div className={isMobileApp?isApple?classesPage.bottomDivMA:classesPage.bottomDivM:classesPage.bottomDivD}>
+                                    {
+                                        edit?
+                                            <Button onClick={async()=>{
+                                                let editElement = {_id: router.query.id}
+                                                if(uploads.length)editElement.uploads = uploads
+                                                if(JSON.stringify(documents)!==JSON.stringify(data.object.documents))editElement.documents = documents
+                                                if(info!==data.object.info)editElement.info = info
+                                                const action = async() => {
+                                                    await setApplication(editElement)
+                                                    Router.reload()
+                                                }
+                                                setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
+                                                showMiniDialog(true)
+                                            }} color='primary'>
+                                                Сохранить
+                                            </Button>
+                                            :
+                                            <Button onClick={async()=>{
+                                                let editElement = {_id: router.query.id, approve: true}
+                                                const action = async() => {
+                                                    await setApplication(editElement)
+                                                    Router.reload()
+                                                }
+                                                setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
+                                                showMiniDialog(true)
+                                            }} color='primary'>
+                                                Принять
+                                            </Button>
+                                    }
+                                    <Button onClick={async()=>{
+                                        const action = async() => {
+                                            await deleteApplication(router.query.id)
+                                            Router.push('/applications')
+                                        }
+                                        setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
+                                        showMiniDialog(true)
+                                    }} color='secondary' className={isMobileApp?classesPage.quickButtonM:classesPage.quickButtonD}>
+                                        Удалить
+                                    </Button>
+                                </div>
+                                :
+                                null
                     }
                     </>
                     :
@@ -559,7 +595,7 @@ Application.getInitialProps = async function(ctx) {
         subcategory = await getSubcategory({_id: ctx.query.subcategory}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
     return {
         data: {
-            object: ctx.query.id==='new'? {documents: [], info: '', category: ctx.query.categoryId?{_id: ctx.query.categoryId, name: ctx.query.categoryName}:null, subcategory: ctx.query.subcategoryId?{_id: ctx.query.subcategoryId, name: ctx.query.subcategoryName}:null}:await getApplication({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            object: ctx.query.id==='new'? {verification: ctx.query.verification==='1',documents: [], info: '', category: ctx.query.categoryId?{_id: ctx.query.categoryId, name: ctx.query.categoryName}:null, subcategory: ctx.query.subcategoryId?{_id: ctx.query.subcategoryId, name: ctx.query.subcategoryName}:null}:await getApplication({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
             categories: !ctx.query.category?await getCategories({}, ctx.req?await getClientGqlSsr(ctx.req):undefined):[],
             subcategories: !ctx.query.subcategory&&ctx.query.id==='new'&&ctx.query.category?await getSubcategories({category: ctx.query.category}, ctx.req?await getClientGqlSsr(ctx.req):undefined):[],
             category,

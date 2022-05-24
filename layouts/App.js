@@ -192,7 +192,7 @@ const App = React.memo(props => {
             subscriptionDataRes.data &&
             subscriptionDataRes.data.reloadData
         ) {
-            if (router.pathname==='/notifications'&&subscriptionDataRes.data.reloadData.notification&&subscriptionDataRes.data.reloadData.notification.type!==99||subscriptionDataRes.data.reloadData.message&&(router.pathname.includes('chat')&&router.query.id===subscriptionDataRes.data.reloadData.message.chat||router.pathname==='/notifications')) {
+            if (router.pathname==='/notifications'&&subscriptionDataRes.data.reloadData.notification&&subscriptionDataRes.data.reloadData.notification.type!==99||subscriptionDataRes.data.reloadData.message&&(router.pathname.includes('chat')&&(router.query.id===subscriptionDataRes.data.reloadData.message.chat||subscriptionDataRes.data.reloadData.mailing)||router.pathname==='/notifications')) {
                 if(subscriptionDataRes.data.reloadData.notification) {
                     if ([0, 1, 2, 3, 4, 5].includes(subscriptionDataRes.data.reloadData.notification.type)) {
                         if (page === 1) {
@@ -224,7 +224,7 @@ const App = React.memo(props => {
                     }
                     else {
                         setList([subscriptionDataRes.data.reloadData.message, ...list])
-                        readChat(subscriptionDataRes.data.reloadData.message.chat)
+                        readChat(subscriptionDataRes.data.reloadData.message.chat?subscriptionDataRes.data.reloadData.message.chat:router.query.id)
                         readUser('notifications0')
                     }
                 }

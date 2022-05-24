@@ -1,15 +1,15 @@
 import { gql } from 'apollo-boost';
 import { SingletonApolloClient } from '../singleton/client';
 
-export const getStatistic = async({dateStart, dateType, type, city}, client)=>{
+export const getStatistic = async({dateStart, dateEnd, type, city}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .query({
-                variables: {dateStart, dateType, type, city},
+                variables: {dateStart, dateEnd, type, city},
                 query: gql`
-                    query ($dateStart: Date, $dateType: String, $type: String, $city: String) {
-                        statistic(dateStart: $dateStart, dateType: $dateType, type: $type, city: $city) {
+                    query ($dateStart: Date, $dateEnd: Date, $type: String, $city: String) {
+                        statistic(dateStart: $dateStart, dateEnd: $dateEnd, type: $type, city: $city) {
                             columns
                             row {_id data}
                         }

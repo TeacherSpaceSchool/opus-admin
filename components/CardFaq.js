@@ -112,8 +112,9 @@ const CardFaq = React.memo((props) => {
                             {
                                 url?
                                     <Button onClick={async()=> {
-                                        setFullDialog(element.title, <PdfViewer pdf={url}/>)
-                                        showFullDialog(true)
+                                        window.open(url,'_blank')
+                                        /*setFullDialog(element.title, <PdfViewer pdf={url}/>)
+                                        showFullDialog(true)*/
                                     }} color='primary'>
                                         Прочитать инструкцию
                                     </Button>
@@ -213,8 +214,9 @@ const CardFaq = React.memo((props) => {
                                         <br/>
                                         <br/>
                                         <Button onClick={async()=> {
-                                            setFullDialog(element.title, <PdfViewer pdf={url}/>)
-                                            showFullDialog(true)
+                                            window.open(url,'_blank')
+                                            /*setFullDialog(element.title, <PdfViewer pdf={url}/>)
+                                            showFullDialog(true)*/
                                         }} color='primary'>
                                             Прочитать инструкцию
                                         </Button>

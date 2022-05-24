@@ -180,7 +180,7 @@ const Subcategories = React.memo((props) => {
                                     style={{width: 174}}
                                     startIcon={<SearchIcon/>}
                                     onClick={()=>{
-                                        setMiniDialog('', <Sign/>)
+                                        setMiniDialog('Вход', <Sign/>)
                                         showMiniDialog(true)
                                     }}
                                 >
@@ -192,7 +192,7 @@ const Subcategories = React.memo((props) => {
                                     style={{width: 174}}
                                     startIcon={<AddIcon/>}
                                     onClick={()=>{
-                                        setMiniDialog('', <Sign/>)
+                                        setMiniDialog('Вход', <Sign/>)
                                         showMiniDialog(true)
                                     }}
                                 >

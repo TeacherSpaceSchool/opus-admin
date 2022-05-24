@@ -67,7 +67,7 @@ const Subcategories = React.memo((props) => {
                 {
                     !profile.role?
                         <Card className={classesOther.card} style={{cursor: 'pointer'}} onClick={()=>{
-                            setMiniDialog('', <Sign/>)
+                            setMiniDialog('Вход', <Sign/>)
                             showMiniDialog(true)
                         }}>
                             <div className={classesOther.row}>
@@ -134,7 +134,7 @@ const Subcategories = React.memo((props) => {
                 {
                     !authenticated?
                         <Card className={classesOther.card} onClick={()=>{
-                            setMiniDialog('', <Sign/>)
+                            setMiniDialog('Вход', <Sign/>)
                             showMiniDialog(true)
                         }} style={{cursor: 'pointer'}}>
                             <div className={classesOther.row}>

@@ -2,11 +2,9 @@ import {
     UNAUTHENTICATED,
     SET_PROFILE,
     SET_AUTH,
-    ERROR_AUTHENTICATED
+    ERROR_AUTHENTICATED,
+    CLEAR_ERROR_AUTHENTICATED
 } from '../constants/user'
-/*import {
-    SHOW_MINI_DIALOG
-} from '../constants/mini_dialog'*/
 import {
     SHOW_LOAD
 } from '../constants/app'
@@ -15,68 +13,6 @@ import { gql } from 'apollo-boost';
 import { SingletonApolloClient } from '../../src/singleton/client';
 import { unregister, register } from '../../src/subscribe';
 import Router from 'next/router';
-import { urlMain } from '../../redux/constants/other'
-
-export function signup(payload) {
-    return async (dispatch) => {
-        await dispatch({
-            type: SHOW_LOAD,
-            payload: true
-        })
-        try {
-            const client = new SingletonApolloClient().getClient()
-            let result = await client.mutate({
-                variables: payload,
-                mutation : gql`
-                    mutation ($login: String!, $name: String!, $password: String!, $code: String, $isApple: Boolean) {
-                        signupuser(login: $login, name: $name, password: $password, code: $code, isApple: $isApple) {
-                            role
-                            status
-                            login
-                            city
-                            addresses {address geo apartment}
-                            phone
-                            _id
-                            name
-                            specializations {category subcategory end discount}
-                            unreadBN {notifications0 notifications1}
-                        }
-                    }`})
-            if(result.data.signupuser.role==='Проверьте данные') {
-                await dispatch({
-                    type: ERROR_AUTHENTICATED,
-                    payload: true
-                })
-                await dispatch({
-                    type: SHOW_LOAD,
-                    payload: false
-                })
-            }
-            else {
-                /*await dispatch({
-                    type: SHOW_LOAD,
-                    payload: false
-                })
-                await dispatch({
-                    type: SHOW_MINI_DIALOG,
-                    payload: false
-                })*/
-                await register(true)
-                    window.location.href = `${urlMain}/?alert=true`
-                //window.location.reload()
-            }
-        } catch(error) {
-            await dispatch({
-                type: SHOW_LOAD,
-                payload: false
-            })
-            await dispatch({
-                type: ERROR_AUTHENTICATED,
-                payload: true
-            });
-        }
-    };
-}
 
 export function signin(payload) {
     return async (dispatch) => {
@@ -89,18 +25,19 @@ export function signin(payload) {
             let result = await client.mutate({
                 variables: payload,
                 mutation : gql`
-                    mutation ($login: String!, $password: String!) {
-                        signinuser(login: $login, password: $password) {
+                    mutation ($name: String, $login: String!, $password: String!, $code: String, $isApple: Boolean) {
+                        signinuser(name: $name, login: $login, password: $password, code: $code, isApple: $isApple) {
                             role
                             status
                             login
                             city
                             addresses {address geo apartment}
                             _id
-                            specializations {category subcategory end discount}
+                            specializations {category subcategory end discount enable}
                             name
                             phone
                             unreadBN {notifications0 notifications1}
+                            verification
                         }
                     }`})
             if(result.data.signinuser.role==='Проверьте данные') {
@@ -138,6 +75,12 @@ export function setAuthenticated(auth) {
     return {
         type: SET_AUTH,
         payload: auth
+    }
+}
+
+export function clearErrorAuthenticated() {
+    return {
+        type: CLEAR_ERROR_AUTHENTICATED,
     }
 }
 
@@ -183,10 +126,11 @@ export function setProfile() {
                             city
                             addresses {address geo apartment}
                             _id
-                            specializations {category subcategory end discount}
+                            specializations {category subcategory end discount enable}
                             name
                             phone
                             unreadBN {notifications0 notifications1}
+                            verification
                         }
                     }`
                 })
@@ -215,10 +159,11 @@ export async function getProfile(client) {
                             city
                             addresses {address geo apartment}
                             _id
-                            specializations {category subcategory end discount}
+                            specializations {category subcategory end discount enable}
                             phone
                             name
                             unreadBN {notifications0 notifications1}
+                            verification
                        }
                    }`
             })

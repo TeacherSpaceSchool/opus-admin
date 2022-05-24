@@ -199,7 +199,7 @@ const Index = React.memo((props) => {
                                         className={classesCategory.cardAOW}
                                         startIcon={<AddIcon />}
                                         onClick={()=>{
-                                            setMiniDialog('', <Sign/>)
+                                            setMiniDialog('Вход', <Sign/>)
                                             showMiniDialog(true)
                                         }}
                                     >

@@ -5,258 +5,90 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 import * as userActions from '../../redux/actions/user'
+import * as appActions from '../../redux/actions/app'
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
-import FormControl from '@material-ui/core/FormControl';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import classNames from 'classnames';
-import IconButton from '@material-ui/core/IconButton';
 import dialogContentStyle from '../../src/styleMUI/dialogContent'
-import { validPhoneLogin, inputPhoneLogin, validEmail } from '../../src/lib'
-import { remindPassword } from '../../src/gql/user'
+import { validPhoneLogin, inputPhoneLogin } from '../../src/lib'
+import { getUserByPhone } from '../../src/gql/passport'
 import Link from 'next/link';
+import * as snackbarActions from '../../redux/actions/snackbar'
 
 const Sign =  React.memo(
     (props) =>{
-        let [messageRemind, setMessageRemind] = useState(false);
-        let [emailRemind, setEmailRemind] = useState('');
-        let handleEmailRemind =  (event) => {
-            setEmailRemind(event.target.value)
-        };
-        let [passEnter, setPassEnter] = useState('');
-        let handlePassEnter =  (event) => {
-            setPassEnter(event.target.value)
-        };
-        let [loginEnter, setLoginEnter] = useState('');
-        let handleLoginEnter =  (event) => {
-            setLoginEnter(inputPhoneLogin(event.target.value))
-        };
-        let [hide, setHide] = useState('password');
-        let handleHide =  () => {
-            setHide(!hide)
-        };
         const { error } = props.user;
         const { isMobileApp, isApple } = props.app;
+        const { showSnackBar } = props.snackbarActions;
         const { showMiniDialog } = props.mini_dialogActions;
-        const { signin, signup } = props.userActions;
+        const { showLoad } = props.appActions;
+        const { signin, clearErrorAuthenticated } = props.userActions;
         const { classes } = props;
         const width = isMobileApp? (window.innerWidth-112) : 500
-        let [errorPassRepeat, setErrorPassRepeat] = useState(false);
-        let [loginReg, setLoginReg] = useState('');
-        let [passReg, setPassReg] = useState('');
-        let [codeReg, setCodeReg] = useState(sessionStorage.code?sessionStorage.code:'');
-        let handleCodeReg =  (event) => {
-            setCodeReg(event.target.value)
+        let [phone, setPhone] = useState('');
+        let handlePhone =  (event) => {
+            setPhone(inputPhoneLogin(event.target.value))
         };
-        let [nameReg, setNameReg] = useState('');
-        let handleNameReg =  (event) => {
-            setNameReg(event.target.value)
+        let [type, setType] = useState('');
+        let [password, setPassword] = useState('');
+        let handlePassword =  (event) => {
+            if(type==='enterEmployment'||event.target.value.length<7)
+                setPassword(event.target.value)
         };
-        let [passRepeatReg, setPassRepeatReg] = useState('');
-        let handlePassReg =  (event) => {
-            setPassReg(event.target.value)
-            if(event.target.value!==passRepeatReg){
-                setErrorPassRepeat(true)
-            }
-            else {
-                setErrorPassRepeat(false)
-            }
-            if(event.target.value.length<8){
-                setErrorPass(true)
-            }
-            else {
-                setErrorPass(false)
-            }
+        let [code, setCode] = useState(sessionStorage.code?sessionStorage.code:'');
+        let handleCode =  (event) => {
+            setCode(event.target.value)
         };
-        let handlePassRepeatReg =  (event) => {
-            setPassRepeatReg(event.target.value)
-            if(event.target.value!==passReg){
-                setErrorPassRepeat(true)
-            }
-            else {
-                setErrorPassRepeat(false)
-            }
+        let [name, setName] = useState('');
+        let handleName =  (event) => {
+            setName(event.target.value)
         };
-        let handleLoginReg =  (event) => {
-            setLoginReg(inputPhoneLogin(event.target.value))
-        };
-        let [errorPass, setErrorPass] = useState(false);
-        let [type, setType] = useState('enter');
-
         return (
             <div className={classes.main} style={{width}}>
                 {
-                    ['enter', 'reg'].includes(type)?
-                        <div className={classes.rowCenter}>
-                            <Button size='large' variant={type==='enter'?'contained':'outlined'} color='primary' onClick={()=>{setType('enter')}} className={classes.button}>
-                                Вход
-                            </Button>
-                            <Button size='large' variant={type==='reg'?'contained':'outlined'} color='primary' onClick={()=>{setType('reg')}} className={classes.button}>
-                                Регистрация
-                            </Button>
-                        </div>
-                        :
-                        null
-                }
-                {type==='enter'?
-                    <>
-                    <TextField
-                        error={!validPhoneLogin(loginEnter)}
-                        id='standard-search'
-                        label='Телефон. Формат: +996559871952'
-                        type={ isMobileApp?'number':'login'}
-                        className={classes.input}
-                        margin='normal'
-                        value={loginEnter}
-                        onChange={handleLoginEnter}
-                        InputProps={{
-                            startAdornment: <InputAdornment position='start'>+996</InputAdornment>,
-                        }}
-                        onKeyPress={event => {
-                            if (event.key === 'Enter') {
-                                if(validPhoneLogin(loginEnter)&&passEnter.length>7)
-                                    signin({login: loginEnter, password: passEnter})
-                                else
-                                    document.getElementById('adornment-password').focus()
-                            }
-                        }}
-                    />
-                    <br/>
-                    <FormControl className={classNames(classes.margin, classes.input)}>
-                        <InputLabel htmlFor='adornment-password'>Пароль</InputLabel>
-                        <Input
-                            id='adornment-password'
-                            type={hide ? 'password' : 'text' }
-                            value={passEnter}
-                            onChange={handlePassEnter}
-                            onKeyPress={event => {
-                                if (event.key === 'Enter'&&validPhoneLogin(loginEnter)&&passEnter.length>7)
-                                    signin({login: loginEnter, password: passEnter})
-                            }}
-                            endAdornment={
-                                <InputAdornment position='end'>
-                                    <IconButton aria-label='Toggle password visibility' onClick={handleHide}>
-                                        {hide ? <VisibilityOff />:<Visibility />  }
-                                    </IconButton>
-                                </InputAdornment>
-                            }
-                        />
-                    </FormControl>
-                    {error?
-                        <div style={{width}} className={classes.error_message}>Неверный логин или пароль</div>
-                        :
-                        null
-                    }
-                    <div style={{width}} className={classes.message} onClick={()=>{setType('remind')}}>Восстановить пароль</div>
-                    <div>Нажимая «Войти» вы принимаете положения документов <Link href='/privacy'><a><b onClick={()=>{showMiniDialog(false);}}>«Соглашение об использовании»</b></a></Link>.</div>
-                    <br/>
-                    <div>
-                        <Button variant='contained' color='primary' onClick={()=>{
-                            if(validPhoneLogin(loginEnter)&&passEnter.length>7)
-                                signin({login: loginEnter, password: passEnter})
-                        }} className={classes.button}>
-                            Войти
-                        </Button>
-                        <Button variant='contained' color='secondary' onClick={()=>{showMiniDialog(false);}} className={classes.button}>
-                            Закрыть
-                        </Button>
-                    </div>
-                    </>
-                    :
-                    type==='reg'?
+                    !type?
                         <>
                         <TextField
-                            error={!nameReg}
-                            label='Имя'
-                            className={classes.textField}
-                            margin='normal'
-                            value={nameReg}
-                            onChange={handleNameReg}
-                            style={{width}}
-                        />
-                        <TextField
-                            error={!validPhoneLogin(loginReg)}
+                            error={!validPhoneLogin(phone)}
                             id='standard-search'
                             label='Телефон. Формат: +996559871952'
+                            type={ isMobileApp?'number':'login'}
+                            className={classes.input}
+                            margin='normal'
+                            value={phone}
+                            onChange={handlePhone}
                             InputProps={{
                                 startAdornment: <InputAdornment position='start'>+996</InputAdornment>,
                             }}
-                            type={ isMobileApp?'number':'login'}
-                            className={classes.textField}
-                            margin='normal'
-                            value={loginReg}
-                            onChange={handleLoginReg}
-                            style={{width}}
+                            onKeyPress={async (event) => {
+                                if (event.key === 'Enter')
+                                    if(validPhoneLogin(phone)){
+                                        await showLoad(true)
+                                        setType(await getUserByPhone(phone))
+                                        await showLoad(false)
+                                    }
+                                    else
+                                        showSnackBar('Заполните все поля')
+                            }}
                         />
-                        <br/>
-                        <FormControl style={{width}} className={classNames(classes.margin, classes.textField)}>
-                            <InputLabel htmlFor='adornment-password'>Придумайте пароль</InputLabel>
-                            <Input
-                                id='adornment-password'
-                                type={hide ? 'password' : 'text' }
-                                value={passReg}
-                                onChange={handlePassReg}
-                                endAdornment={
-                                    <InputAdornment position='end'>
-                                        <IconButton aria-label='Toggle password visibility' onClick={handleHide}>
-                                            {hide ? <VisibilityOff />:<Visibility />  }
-                                        </IconButton>
-                                    </InputAdornment>
-                                }
-                            />
-                        </FormControl>
-                        <br/>
-                        <FormControl style={{width}} className={classNames(classes.margin, classes.textField)}>
-                            <InputLabel htmlFor='adornment-password'>Повторите пароль</InputLabel>
-                            <Input
-                                id='adornment-password'
-                                type={hide ? 'password' : 'text' }
-                                value={passRepeatReg}
-                                onChange={handlePassRepeatReg}
-                                endAdornment={
-                                    <InputAdornment position='end'>
-                                        <IconButton aria-label='Toggle password visibility' onClick={handleHide}>
-                                            {hide ? <VisibilityOff />:<Visibility />  }
-                                        </IconButton>
-                                    </InputAdornment>
-                                }
-                            />
-                        </FormControl>
-                        <TextField
-                            label='Промокод (если есть)'
-                            className={classes.textField}
-                            margin='normal'
-                            value={codeReg}
-                            onChange={handleCodeReg}
-                            style={{width}}
-                        />
-                        <br/>
-                        {error?
-                            <div style={{width}} className={classes.error_message}>Неверный логин или пароль</div>
-                            :
-                            null
-                        }
-                        {errorPass?
-                            <div style={{width}} className={classes.error_message}>Недостаточная длина пароля</div>
-                            :
-                            null
-                        }
-                        {errorPassRepeat?
-                            <div style={{width}} className={classes.error_message}>Пароли не совпадают</div>
-                            :
-                            null
-                        }
-                        <div>Нажимая «Зарегистрироваться» вы принимаете положения документов <Link href='/privacy'><a><b onClick={()=>{showMiniDialog(false);}}>«Соглашение об использовании»</b></a></Link>.</div>
+                        <div>Код действителен в течение 5 минут</div>
                         <br/>
                         <div>
-                            <Button variant='contained' color='primary' onClick={()=>{if(!errorPass&&!errorPassRepeat&&nameReg&&validPhoneLogin(loginReg))signup({name: nameReg, login: loginReg, password: passReg, code: codeReg, isApple})}} className={classes.button}>
-                                Зарегистрироваться
+                            <Button variant='contained' color='primary' onClick={async ()=>{
+                                if(validPhoneLogin(phone)){
+                                    await showLoad(true)
+                                    setType(await getUserByPhone(phone))
+                                    await showLoad(false)
+                                }
+                                else
+                                    showSnackBar('Заполните все поля')
+                            }} className={classes.button}>
+                                Получить код
                             </Button>
-                            <Button variant='contained' color='secondary' onClick={()=>{showMiniDialog(false);}} className={classes.button}>
+                            <Button variant='contained' color='secondary' onClick={()=>{
+                                clearErrorAuthenticated();
+                                showMiniDialog(false);
+                            }} className={classes.button}>
                                 Закрыть
                             </Button>
                         </div>
@@ -264,40 +96,71 @@ const Sign =  React.memo(
                         :
                         <>
                         <TextField
-                            label='Email'
-                            type='email'
-                            className={classes.input}
+                            type={type!=='enterEmployment'?'number':'text'}
+                            error={password.length<6}
+                            label='Код*'
+                            className={classes.textField}
                             margin='normal'
-                            value={emailRemind}
-                            onChange={handleEmailRemind}
+                            value={password}
+                            onChange={handlePassword}
+                            style={{width}}
+                            onKeyPress={async (event) => {
+                                if (event.key === 'Enter')
+                                    if(validPhoneLogin(phone)&&(type==='enterEmployment'||password.length===6)&&(type!=='reg'||name.length))
+                                        signin({login: phone, password, name, code, isApple})
+                                    else
+                                        showSnackBar('Заполните все поля')
+                            }}
                         />
-                        {!validEmail(emailRemind)?
-                            <div style={{width}} className={classes.error_message}>Неверный email</div>
+                        {
+                            type==='reg'?
+                                <>
+                                <TextField
+                                    error={!name.length}
+                                    label='Имя*'
+                                    className={classes.textField}
+                                    margin='normal'
+                                    value={name}
+                                    onChange={handleName}
+                                    style={{width}}
+                                />
+                                <TextField
+                                    label='Промокод (если есть)'
+                                    className={classes.textField}
+                                    margin='normal'
+                                    value={code}
+                                    onChange={handleCode}
+                                    style={{width}}
+                                />
+                                </>
+                                :
+                                null
+                        }
+                        <br/>
+                        {error?
+                            <>
+                            <div style={{width}} className={classes.error_message}>Неверный логин или код</div>
+                            <br/>
+                            </>
                             :
                             null
                         }
-                        {messageRemind?
-                            <div style={{width}} className={classes.message}>Проверьте свой email</div>
-                            :
-                            null
-                        }
-                        <div>
-                            {/*<div style={{width: width}} className={classes.message} onClick={()=>{setType('reg')}}>Зарегистрироваться</div>*/}
-                            <div style={{width: width}}>Если забыли свой email или он не был привязан к аккаунту, то перейдите в раздел <Link href={'/contact'}><a>"Контакты"</a></Link> и свяжитесь с нашими специалистами.</div>
-                        </div>
+                        <div>Нажимая «Войти» вы принимаете положения документов <Link href='/privacy'><a><b onClick={()=>{showMiniDialog(false);}}>«Соглашение об использовании»</b></a></Link>.</div>
                         <br/>
                         <div>
-                            <Button variant='contained' color='primary' onClick={async()=>{
-                                if(validEmail(emailRemind)) {
-                                    if(await remindPassword({email: emailRemind})==='OK')
-                                        setMessageRemind(true)
-                                    else
-                                        setEmailRemind('')
+                            <Button variant='contained' color='primary' onClick={async ()=>{
+                                if(validPhoneLogin(phone)&&(type==='enterEmployment'||password.length===6)&&(type!=='reg'||name.length)){
+                                    signin({login: phone, password, name, code, isApple})
                                 }
+                                else
+                                    showSnackBar('Заполните все поля')
                             }} className={classes.button}>
-                                Восстановить
+                                Войти
                             </Button>
-                            <Button variant='contained' color='secondary' onClick={()=>{showMiniDialog(false);}} className={classes.button}>
+                            <Button variant='contained' color='secondary' onClick={()=>{
+                                clearErrorAuthenticated();
+                                showMiniDialog(false);
+                            }} className={classes.button}>
                                 Закрыть
                             </Button>
                         </div>
@@ -317,8 +180,10 @@ function mapStateToProps (state) {
 
 function mapDispatchToProps(dispatch) {
     return {
+        snackbarActions: bindActionCreators(snackbarActions, dispatch),
         mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch),
         userActions: bindActionCreators(userActions, dispatch),
+        appActions: bindActionCreators(appActions, dispatch),
     }
 }
 

@@ -29,11 +29,7 @@ const Statistic = React.memo((props) => {
     const initialRender = useRef(true);
     let [city, setCity] = useState(undefined);
     let [dateStart, setDateStart] = useState(data.dateStart);
-    let [dateType, setDateType] = useState({name:'День', value: 'day'});
-    const dateTypes = [{name:'Часы', value: 'time'}, {name:'День', value: 'day'}, {name:'Месяц', value: 'month'}, {name:'Год', value: 'year'}]
-    let handleDateType =  (event) => {
-        setDateType({value: event.target.value, name: event.target.name})
-    };
+    let [dateEnd, setDateEnd] = useState(null);
     let [type, setType] = useState({name:'Категории', value: 'category'});
     const types = [{name:'Категории', value: 'category'}, {name:'Подкатегории', value: 'subcategory'}, {name:'Исполнители', value: 'specialist'}]
     let handleType =  (event) => {
@@ -53,7 +49,7 @@ const Statistic = React.memo((props) => {
                 await showLoad(true)
                 setStatistic((await getStatistic({
                     dateStart: dateStart ? dateStart : null,
-                    dateType: dateType.value,
+                    dateEnd: dateEnd ? dateEnd : null,
                     type: type.value,
                     city
                 })))
@@ -62,7 +58,7 @@ const Statistic = React.memo((props) => {
             else
                 initialRender.current = false
         })()
-    },[dateStart, dateType, type, city])
+    },[dateStart, dateEnd, type, city])
     return (
         <App backBarShow pageName='Статистика'>
             <Head>
@@ -104,16 +100,35 @@ const Statistic = React.memo((props) => {
                             inputProps={{
                                 'aria-label': 'description',
                             }}
-                            onChange={ event => setDateStart(event.target.value) }
+                            onChange={ event => {
+                                if(event.target.value&&dateEnd&&dateEnd<=event.target.value){
+                                    dateEnd = new Date(event.target.value)
+                                    dateEnd.setDate(dateEnd.getDate() + 1)
+                                    setDateEnd(pdDatePicker(dateEnd))
+                                }
+                                setDateStart(event.target.value)
+                            }}
                         />
-                        <FormControl className={classes.input}>
-                            <InputLabel>Тип даты</InputLabel>
-                            <Select value={dateType.value} onChange={handleDateType}>
-                                {dateTypes.map((element)=>
-                                    <MenuItem key={element.value} value={element.value} ola={element.name}>{element.name}</MenuItem>
-                                )}
-                            </Select>
-                        </FormControl>
+                        <TextField
+                            className={classes.input}
+                            label='Дата конца'
+                            type='date'
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            value={dateEnd}
+                            inputProps={{
+                                'aria-label': 'description',
+                            }}
+                            onChange={ event => {
+                                if(event.target.value&&dateStart&&dateStart>=event.target.value){
+                                    dateStart = new Date(event.target.value)
+                                    dateStart.setDate(dateStart.getDate() - 1)
+                                    setDateStart(pdDatePicker(dateStart))
+                                }
+                                setDateEnd(event.target.value)
+                            }}
+                        />
                         <FormControl className={classes.input}>
                             <InputLabel>Тип данных</InputLabel>
                             <Select value={type.value} onChange={handleType}>
@@ -147,7 +162,7 @@ Statistic.getInitialProps = async function(ctx) {
     const dateStart = pdDatePicker()
     return {
         data: {
-            statistic: await getStatistic({type: 'category', dateStart, dateType: 'day'}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            statistic: await getStatistic({type: 'category', dateStart}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
             dateStart
         }
     };

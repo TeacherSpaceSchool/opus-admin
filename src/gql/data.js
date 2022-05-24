@@ -3,6 +3,7 @@ import { gql } from 'apollo-boost';
 export const subscriptionData = gql`
   subscription  {
     reloadData {
+        mailing
         notification 
             {
                 _id

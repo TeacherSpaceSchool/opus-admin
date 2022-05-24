@@ -3,7 +3,8 @@ import {
     UNAUTHENTICATED,
     SET_PROFILE,
     ERROR_AUTHENTICATED,
-    SET_AUTH
+    SET_AUTH,
+    CLEAR_ERROR_AUTHENTICATED
 } from '../constants/user'
 
 const initialState = {
@@ -14,6 +15,9 @@ const initialState = {
 
 export default function user(state = initialState, action) {
     switch (action.type) {
+
+        case CLEAR_ERROR_AUTHENTICATED:
+            return { ...state, authenticated: false, error: false  };
 
         case AUTHENTICATED:
             return { ...state, authenticated: true, error: false  };

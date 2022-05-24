@@ -123,7 +123,7 @@ const MyBottomNavigation = React.memo((props) => {
                                                 Router.push(`/notifications?page=${unreadBN.notifications1 ? 1 : 0}`)
                                         }
                                         else {
-                                            setMiniDialog('', <Sign/>)
+                                            setMiniDialog('Вход', <Sign/>)
                                             showMiniDialog(true)
                                         }
                                     }}

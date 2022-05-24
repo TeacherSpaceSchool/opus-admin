@@ -28,6 +28,7 @@ export const getOrder = async({_id}, client)=>{
                             price
                             urgency
                             images
+                            verificationExecutor
                             del
                             status
                             views
@@ -61,6 +62,7 @@ export const getNearOrders = async(geo)=>{
                             address
                             apartment
                             info
+                            verificationExecutor
                             geo
                             dateStart
                             dateEnd
@@ -97,6 +99,7 @@ export const getOrders = async({skip, my, user, limit, status, subcategory}, cli
                             responsedUsers
                             subcategory {_id name}
                             name
+                            verificationExecutor
                             address
                             apartment
                             info
@@ -145,8 +148,8 @@ export const addOrder = async(element)=>{
         let res = await client.mutate({
             variables: element,
             mutation : gql`
-                    mutation ($category: ID, $subcategory: ID, $address: String, $apartment: String, $name: String!, $info: String!, $geo: [Float]!, $dateStart: Date, $dateEnd: Date, $price: String, $urgency: Boolean, $uploads: [Upload], $executor: ID) {
-                        addOrder(category: $category, subcategory: $subcategory, address: $address, apartment: $apartment, name: $name, info: $info, geo: $geo, dateStart: $dateStart, dateEnd: $dateEnd, price: $price, urgency: $urgency, uploads: $uploads, executor: $executor) 
+                    mutation ($category: ID, $subcategory: ID, $verificationExecutor: Boolean, $address: String, $apartment: String, $name: String!, $info: String!, $geo: [Float]!, $dateStart: Date, $dateEnd: Date, $price: String, $urgency: Boolean, $uploads: [Upload], $executor: ID) {
+                        addOrder(category: $category, verificationExecutor: $verificationExecutor, subcategory: $subcategory, address: $address, apartment: $apartment, name: $name, info: $info, geo: $geo, dateStart: $dateStart, dateEnd: $dateEnd, price: $price, urgency: $urgency, uploads: $uploads, executor: $executor) 
                     }`})
         return res.data.addOrder
     } catch(err){
@@ -160,8 +163,8 @@ export const setOrder = async(element)=>{
         let res = await client.mutate({
             variables: element,
             mutation : gql`
-                    mutation ($_id: ID!, $address: String, $apartment: String, $name: String, $info: String, $geo: [Float], $dateStart: Date, $dateEnd: Date, $price: String, $images: [String], $uploads: [Upload], $urgency: Boolean) {
-                        setOrder(_id: $_id, address: $address, apartment: $apartment, name: $name, info: $info, geo: $geo, dateStart: $dateStart, dateEnd: $dateEnd, price: $price, images: $images, uploads: $uploads, urgency: $urgency) 
+                    mutation ($_id: ID!, $address: String, $apartment: String, $verificationExecutor: Boolean, $name: String, $info: String, $geo: [Float], $dateStart: Date, $dateEnd: Date, $price: String, $images: [String], $uploads: [Upload], $urgency: Boolean) {
+                        setOrder(_id: $_id, address: $address, apartment: $apartment, verificationExecutor: $verificationExecutor, name: $name, info: $info, geo: $geo, dateStart: $dateStart, dateEnd: $dateEnd, price: $price, images: $images, uploads: $uploads, urgency: $urgency) 
                     }`})
         return res.data.setOrder
     } catch(err){

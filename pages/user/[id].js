@@ -19,7 +19,7 @@ import { getUser, setUser, favoriteUser } from '../../src/gql/user'
 import { getReviews, canReview } from '../../src/gql/review'
 import { getSubcategories } from '../../src/gql/subcategory'
 import { getBlogs } from '../../src/gql/blog'
-import {validPhoneLogin, validEmail, cities, inputInt, pdDDMMYYYY} from '../../src/lib'
+import {validPhoneLogin, validEmail, cities, inputPhoneLogin, pdDDMMYYYY} from '../../src/lib'
 import { getClientGqlSsr } from '../../src/getClientGQL'
 import { useRouter } from 'next/router';
 import Tabs from '@material-ui/core/Tabs';
@@ -29,9 +29,6 @@ import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Sign from '../../components/dialog/Sign'
 import AddIcon from '@material-ui/icons/Add';
-import Input from '@material-ui/core/Input';
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { bindActionCreators } from 'redux'
 import * as snackbarActions from '../../redux/actions/snackbar'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
@@ -39,6 +36,7 @@ import Confirmation from '../../components/dialog/Confirmation'
 import SetAchievements from '../../components/dialog/SetAchievements'
 import SetPrices from '../../components/dialog/SetPrices'
 import SetSpecializations from '../../components/dialog/SetSpecializations'
+import ChangePhone from '../../components/dialog/ChangePhone'
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -56,11 +54,11 @@ import {useSwipeable} from 'react-swipeable';
 import Remove from '@material-ui/icons/Remove';
 import Rating from '@material-ui/lab/Rating';
 import dynamic from 'next/dynamic'
-const Geo = dynamic(import('../../components/dialog/Geo'), { ssr: false });
 import certificateStyle from '../../src/styleMUI/other/certificate'
 import * as appActions from '../../redux/actions/app'
 import Switch from '@material-ui/core/Switch';
 import Autocomplect2gis from '../../components/app/Autocomplect2gis'
+const Geo = dynamic(import('../../components/dialog/Geo'), { ssr: false });
 const height = 100
 
 const User = React.memo((props) => {
@@ -103,12 +101,8 @@ const User = React.memo((props) => {
         setPage(newPage);
         (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
     };
-    let [hide, setHide] = useState('password');
-    let handleHide =  () => {
-        setHide(!hide)
-    };
 
-    const [edit] = useState(profile.role==='admin'||profile._id===router.query.id);
+    const [edit] = useState(['manager', 'admin'].includes(profile.role)||profile._id===router.query.id);
     let [addresses, setAddresses] = useState(data.user&&data.user.addresses?data.user.addresses.map(e=>{return {address: e.address, geo: e.geo, apartment: e.apartment}}):[]);
     let addAddress = ()=>{
         addresses = [...addresses, {address: '', geo: [42.8700000, 74.5900000]}]
@@ -123,6 +117,7 @@ const User = React.memo((props) => {
     const [prices, setPrices] = useState(data.user&&data.user.prices?data.user.prices.map(element=>{return {name: element.name, price: element.price}}):[]);
     const [specializations, setSpecializations] = useState(data.user&&data.user.specializations?data.user.specializations.map(element=>{return {category: element.category, enable: element.enable, subcategory: element.subcategory, end: element.end, discount: element.discount}}):[]);
     const [name, setName] = useState(data.user&&data.user.name?data.user.name:'');
+    const [verification, setVerification] = useState(data.user&&data.user.verification?data.user.verification:false);
     const [certificates, setCertificates] = useState(data.user&&data.user.certificates?[...data.user.certificates]:[]);
     let [uploadCertificates, setUploadsCertificate] = useState([]);
     let handleChangeCertificates = (async (event) => {
@@ -135,7 +130,6 @@ const User = React.memo((props) => {
     })
     let certificateRef = useRef(null);
     const [login, setLogin] = useState(data.user&&data.user.login?data.user.login:'');
-    const [password, setPassword] = useState(data.user&&data.user.password?data.user.password:'');
     const [city, setCity] = useState(data.user&&data.user.city?data.user.city:'Бишкек');
     let handleCity = event => setCity(event.target.value)
     const [email, setEmail] = useState(data.user&&data.user.email?data.user.email:'');
@@ -233,7 +227,7 @@ const User = React.memo((props) => {
         }
         else if(initialRender.current)
             initialRender.current = false
-    }, [login, certificates, uploadCertificates, addresses, password, name, city, email, info, avatar, specializations, achievements, prices]);
+    }, [login, certificates, uploadCertificates, addresses, name, city, email, info, avatar, specializations, achievements, prices, verification]);
     const save = async()=>{
         if (name&&validPhoneLogin(login)&&(!email||validEmail(email))) {
             let editElement = {_id: router.query.id}
@@ -256,8 +250,8 @@ const User = React.memo((props) => {
 
             if(city&&city!==data.user.city)editElement.city = city
             if(name&&name!==data.user.name)editElement.name = name
+            if(verification!==data.user.verification)editElement.verification = verification
 
-            if(password&&password.length>7)editElement.password = password
             if(login&&login!==data.user.login)editElement.login = login
             if(email&&email!==data.user.email)editElement.email = email
             if(info&&info!==data.user.info)editElement.info = info
@@ -349,12 +343,38 @@ const User = React.memo((props) => {
                                                 <Rating defaultValue={data.user.reiting} precision={0.1} readOnly />
                                             </div>
                                             {
+                                                achievements.length||verification||['manager', 'admin'].includes(profile.role)?
+                                                    <div className={classesUser.dividerProfile}/>
+                                                    :
+                                                    null
+                                            }
+                                            {
+                                                ['manager', 'admin'].includes(profile.role)?
+                                                    <div className={classesPageList.row}>
+                                                        <Switch
+                                                            checked={verification}
+                                                            onChange={()=>setVerification(!verification)}
+                                                            color='primary'
+                                                            size='small'
+                                                        />
+                                                        <div className={classesUser.textProfile}>
+                                                            ✅ Личность подтверждена
+                                                        </div>
+                                                    </div>
+                                                    :
+                                                    verification?
+                                                        <div className={classesUser.textProfile}>
+                                                            ✅ Личность подтверждена
+                                                        </div>
+                                                        :
+                                                        null
+                                            }
+                                            {
                                                 achievements.length?
                                                     <>
-                                                    <div className={classesUser.dividerProfile}/>
                                                     {achievements.map((element, idx)=>
                                                         <div className={classesUser.rowProfile} key={`achievements${idx}`} onClick={async()=>{
-                                                            if(profile.role==='admin'&&page===0) {
+                                                            if(['manager', 'admin'].includes(profile.role)&&page===0) {
                                                                 setMiniDialog('Достижения', <SetAchievements
                                                                     setAchievements={setAchievements}
                                                                     achievements={achievements}/>)
@@ -487,24 +507,33 @@ const User = React.memo((props) => {
                                 <Card className={classesUser.divForm}>
                                     <CardContent>
                                         {
+                                            edit ?
+                                                <>
+                                                <TextField
+                                                    value={login}
+                                                    onChange={(event)=>{if(['manager', 'admin'].includes(profile.role))setLogin(inputPhoneLogin(event.target.value))}}
+                                                    error={!validPhoneLogin(login)}
+                                                    label='Телефон*. Формат: +996559871952'
+                                                    type='login'
+                                                    className={classesPageList.input}
+                                                    margin='normal'
+                                                    InputProps={{
+                                                        startAdornment: <InputAdornment position='start'>+996</InputAdornment>,
+                                                    }}
+                                                    onClick={()=>{
+                                                        if(profile.role==='client') {
+                                                            setMiniDialog('Сменить номер телефона', <ChangePhone/>)
+                                                            showMiniDialog(true)
+                                                        }
+                                                    }}
+                                                />
+                                                </>
+                                                :
+                                                null
+                                        }
+                                        {
                                             edit?
                                                 <>
-                                                <Input
-                                                    error={!!(password.length&&password.length<8)}
-                                                    value={password}
-                                                    onChange={(event)=>{setPassword(event.target.value)}}
-                                                    placeholder='Новый пароль'
-                                                    autoComplete='new-password'
-                                                    type={hide ? 'password' : 'text' }
-                                                    className={classesPageList.input}
-                                                    endAdornment={
-                                                        <InputAdornment position='end'>
-                                                            <IconButton aria-label='Toggle password visibility' onClick={handleHide}>
-                                                                {hide ? <VisibilityOff />:<Visibility />  }
-                                                            </IconButton>
-                                                        </InputAdornment>
-                                                    }
-                                                />
                                                 <TextField
                                                     error={edit&&!name.length}
                                                     label='Имя*'
@@ -514,25 +543,6 @@ const User = React.memo((props) => {
                                                     inputProps={{
                                                         'aria-label': 'description',
                                                         readOnly: !edit,
-                                                    }}
-                                                />
-                                                </>
-                                                :
-                                                null
-                                        }
-                                        {
-                                            edit ?
-                                                <>
-                                                <TextField
-                                                    value={login}
-                                                    onChange={(event)=>{if(edit)setLogin(inputInt(event.target.value))}}
-                                                    error={!validPhoneLogin(login)}
-                                                    label='Телефон*. Формат: +996559871952'
-                                                    type='login'
-                                                    className={classesPageList.input}
-                                                    margin='normal'
-                                                    InputProps={{
-                                                        startAdornment: <InputAdornment position='start'>+996</InputAdornment>,
                                                     }}
                                                 />
                                                 </>
@@ -557,7 +567,7 @@ const User = React.memo((props) => {
                                                                 <>
                                                                 <div className={classesPageList.row}>
                                                                     <TextField
-                                                                        label='Квартира'
+                                                                        label='№ дома или квартиры'
                                                                         className={classesPageList.input}
                                                                         value={element.apartment}
                                                                         onChange={(event)=>{addresses[idx].apartment = event.target.value; setAddresses([...addresses])}}
@@ -566,7 +576,7 @@ const User = React.memo((props) => {
                                                                         onClick={()=>{
                                                                             deleteAddress(idx)
                                                                         }}
-                                                                        aria-label='toggle password visibility'
+                                                                        aria-label='toggle visibility'
                                                                     >
                                                                         <Remove/>
                                                                     </IconButton>
@@ -589,7 +599,7 @@ const User = React.memo((props) => {
                                                                         label={`Адрес ${idx+1}`}
                                                                     />
                                                                     <TextField
-                                                                        label='Квартира'
+                                                                        label='№ дома или квартиры'
                                                                         className={classesPageList.input}
                                                                         value={element.apartment}
                                                                         onChange={(event)=>{addresses[idx].apartment = event.target.value; setAddresses([...addresses])}}
@@ -598,7 +608,7 @@ const User = React.memo((props) => {
                                                                         onClick={()=>{
                                                                             deleteAddress(idx)
                                                                         }}
-                                                                        aria-label='toggle password visibility'
+                                                                        aria-label='toggle visibility'
                                                                     >
                                                                         <Remove/>
                                                                     </IconButton>
@@ -701,7 +711,7 @@ const User = React.memo((props) => {
                                 page===1?
                                     <div className={classesBlog.row}>
                                         {
-                                            edit&&profile.role!=='admin'?
+                                            edit&&!['manager', 'admin'].includes(profile.role)?
                                                 <CardBlog setList={setList} list={list}/>
                                                 :
                                                 null
@@ -792,7 +802,7 @@ const User = React.memo((props) => {
                             className={classesCategory.cardAO}
                             startIcon={<AddIcon />}
                             onClick={()=>{
-                                setMiniDialog('', <Sign/>)
+                                setMiniDialog('Вход', <Sign/>)
                                 showMiniDialog(true)
                             }}
                         >
@@ -805,20 +815,22 @@ const User = React.memo((props) => {
                 edit&&page===0?
                     <div className={isMobileApp?isApple?classesPageList.bottomDivMA:classesPageList.bottomDivM:classesPageList.bottomDivD}>
                         <Button onClick={async()=>{
-                            if (!(name&&validPhoneLogin(login)&&(!email||validEmail(email)))) {
+                            if (!(name&&(!email||validEmail(email)))) {
                                 showSnackBar('Заполните все красные поля')
                             }
-                            const action = async() => {
-                                await save()
-                                await Router.reload()
+                            else {
+                                const action = async () => {
+                                    await save()
+                                    await Router.reload()
+                                }
+                                setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
+                                showMiniDialog(true)
                             }
-                            setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
-                            showMiniDialog(true)
                         }} color='primary'>
                             Сохранить
                         </Button>
                         {
-                            profile.role==='admin'?
+                            ['manager', 'admin'].includes(profile.role)?
                                 <>
                                 {
                                     router.query.id!=='new'?
@@ -880,22 +892,29 @@ const User = React.memo((props) => {
                                                     :
                                                     null
                                             }
-                                            <Link
-                                                href={{pathname: '/orders', query: {user: router.query.id}}}
-                                                as={`/orders?user=${router.query.id}`}
-                                            >
-                                                <MenuItem>
-                                                    Заказы
-                                                </MenuItem>
-                                            </Link>
-                                            <Link
-                                                href={{pathname: '/notifications', query: {user: router.query.id}}}
-                                                as={`/notifications?user=${router.query.id}`}
-                                            >
-                                                <MenuItem>
-                                                    Уведомления
-                                                </MenuItem>
-                                            </Link>
+                                            {
+                                                'admin'===profile.role?
+                                                    <>
+                                                    <Link
+                                                        href={{pathname: '/orders', query: {user: router.query.id}}}
+                                                        as={`/orders?user=${router.query.id}`}
+                                                    >
+                                                        <MenuItem>
+                                                            Заказы
+                                                        </MenuItem>
+                                                    </Link>
+                                                    <Link
+                                                        href={{pathname: '/notifications', query: {user: router.query.id}}}
+                                                        as={`/notifications?user=${router.query.id}`}
+                                                    >
+                                                        <MenuItem>
+                                                            Уведомления
+                                                        </MenuItem>
+                                                    </Link>
+                                                    </>
+                                                    :
+                                                    null
+                                            }
                                         </Menu>
                                         <Button
                                             size='large'

@@ -98,6 +98,21 @@ export const sendMessage = async(element)=>{
     }
 }
 
+export const mailingMessage = async(element)=>{
+    try{
+        const client = new SingletonApolloClient().getClient()
+        let res = await client.mutate({
+            variables: element,
+            mutation : gql`
+                    mutation ($type: String!, $text: String, $file: Upload, $id: ID, $typeMailing: String!) {
+                        mailingMessage(type: $type, text: $text, file: $file, id: $id, typeMailing: $typeMailing) 
+                    }`})
+        return res.data.mailingMessage
+    } catch(err){
+        console.error(err)
+    }
+}
+
 export const readChat = async(chat)=>{
     try{
         const client = new SingletonApolloClient().getClient()

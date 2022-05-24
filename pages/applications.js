@@ -18,23 +18,26 @@ import Chip from '@material-ui/core/Chip';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
+import { useRouter } from 'next/router';
 const height = 136
 
 const Applications = React.memo((props) => {
     const classesPageList = stylePageList();
     const classesCategory = styleCategory();
     const classesSubcategory = styleSubcategory();
+    const router = useRouter();
     const { data } = props;
     const { search } = props.app;
     const { profile } = props.user;
     const initialRender = useRef(true);
     let [searchTimeOut, setSearchTimeOut] = useState(null);
+    let [verification, setVerification] = useState(router.query.verification==='1'?true:null);
     let [list, setList] = useState(data.list);
     let [count, setCount] = useState(data.count);
     let [status, setStatus] = useState('');
     const getList = async ()=>{
-        setList((await getApplications({search, status, skip: 0})));
-        setCount(await getApplicationsCount({search, status}));
+        setList((await getApplications({search, verification, status, skip: 0})));
+        setCount(await getApplicationsCount({search, verification, status}));
         (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
         forceCheck();
         paginationWork.current = true
@@ -42,13 +45,20 @@ const Applications = React.memo((props) => {
     let paginationWork = useRef(true);
     const checkPagination = async()=>{
         if(paginationWork.current&&!initialRender.current){
-            let addedList = await getApplications({skip: list.length, search, status})
+            let addedList = await getApplications({skip: list.length, verification, search, status})
             if(addedList.length>0)
                 setList([...list, ...addedList])
             else
                 paginationWork.current = false
         }
     }
+    useEffect(()=>{
+        (async()=>{
+            if(!initialRender.current) {
+                await getList()
+            }
+        })()
+    },[ status, verification])
     useEffect(()=>{
         (async()=>{
             if(initialRender.current) {
@@ -62,7 +72,7 @@ const Applications = React.memo((props) => {
                 setSearchTimeOut(searchTimeOut)
             }
         })()
-    },[ search, status])
+    },[ search])
 
     return (
         <App pageName='Заявки на исполнителя' searchShow={profile.role!=='client'} backBarShow={profile.role==='client'} paginationWork={paginationWork} checkPagination={checkPagination}>
@@ -92,6 +102,26 @@ const Applications = React.memo((props) => {
                 {
                     profile.role!=='client'?
                         <div className={classesSubcategory.divChip} style={{'&::-webkit-scrollbar': {display: 'none'}}}>
+                            <Chip
+                                avatar={verification?<Avatar>{count[2]}</Avatar>:null}
+                                className={classesSubcategory.chip}
+                                onClick={()=>{
+                                    router.replace(`${router.pathname}`, undefined, { shallow: true })
+                                    setVerification(null)
+                                }}
+                                color={!verification?'primary':'default'}
+                                label='заявка'
+                            />
+                            <Chip
+                                avatar={!verification?<Avatar>{count[2]}</Avatar>:null}
+                                onClick={()=>{
+                                    router.replace(`${router.pathname}?verification=1`, undefined, { shallow: true })
+                                    setVerification(true)
+                                }}
+                                className={classesSubcategory.chip}
+                                label='подтверждение'
+                                color={verification?'primary':'default'}
+                            />
                             <Chip
                                 avatar={<Avatar>{count[0]+count[1]}</Avatar>}
                                 className={classesSubcategory.chip}
@@ -146,8 +176,8 @@ Applications.getInitialProps = async function(ctx) {
         limit = parseInt(sessionStorage.scrollPostionLimit)
     return {
         data: {
-            list: await getApplications({skip: 0, limit}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
-            count: await getApplicationsCount({}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            list: await getApplications({skip: 0, limit, ...ctx.query.verification==='1'?{verification: true}:{}}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            count: await getApplicationsCount({...ctx.query.verification==='1'?{verification: true}:{}}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
             limit
         }
     };

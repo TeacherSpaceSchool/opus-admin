@@ -6,6 +6,7 @@ import stylePageList from '../src/styleMUI/list'
 import { urlMain } from '../redux/constants/other'
 import initialApp from '../src/initialApp'
 import * as appActions from '../redux/actions/app'
+import * as mini_dialogActions from '../redux/actions/mini_dialog'
 import { bindActionCreators } from 'redux'
 import LazyLoad from 'react-lazyload';
 import CardPlaceholder from '../components/CardPlaceholder'
@@ -30,14 +31,21 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import SearchIcon from '@material-ui/icons/Search';
 import CancelIcon from '@material-ui/icons/Cancel';
 import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
+import SendIcon from '@material-ui/icons/Send';
+import styleCategory from '../src/styleMUI/other/category'
+import Mailing from '../components/dialog/Mailing'
+import { getCategories } from '../src/gql/category'
 const height = 100
 
 const Notifications = React.memo((props) => {
     const classesPageList = stylePageList();
+    const classesCategory = styleCategory();
     const { data } = props;
     const { profile } = props.user;
     const router = useRouter();
     const initialRender = useRef(true);
+    const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     let [list, setList] = useState(data.list);
     const [page, setPage] = useState(data.page);
     const [unreadP, setUnreadP] = useState(data.unreadP);
@@ -204,6 +212,24 @@ const Notifications = React.memo((props) => {
                         }
                     }):null
                 }
+                {
+                    page===0&&profile.role==='admin'&&!router.query.user?
+                        <Button
+                            variant='contained'
+                            color='primary'
+                            className={classesCategory.cardAO}
+                            startIcon={<SendIcon />}
+                            onClick={async()=>{
+                                const categories = await getCategories({})
+                                setMiniDialog('Рассылка', <Mailing categories={categories}/>)
+                                showMiniDialog(true)
+                            }}
+                        >
+                            Рассылка
+                        </Button>
+                        :
+                        null
+                }
             </div>
         </App>
     )
@@ -258,6 +284,7 @@ function mapStateToProps (state) {
 function mapDispatchToProps(dispatch) {
     return {
         appActions: bindActionCreators(appActions, dispatch),
+        mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch),
     }
 }
 
