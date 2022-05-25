@@ -55,7 +55,9 @@ export function signin(payload) {
                     type: SHOW_MINI_DIALOG,
                     payload: false
                 })*/
+                let reloadTimeout = setTimeout(()=>window.location.reload(), 30000)
                 await register(true)
+                clearInterval(reloadTimeout)
                 window.location.reload()
             }
         } catch(error) {
