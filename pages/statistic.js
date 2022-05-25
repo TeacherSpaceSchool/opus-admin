@@ -142,8 +142,13 @@ const Statistic = React.memo((props) => {
                 </CardContent>
             </Card>
             <div className='count' >
-                <div className={classes.rowStatic}> {`Количество: ${statistic.row[0].data[0]}`}</div>
-                {/*<div className={classes.rowStatic}> {`Выручка: ${statistic.row[0].data[1]} сом`}</div>*/}
+                <div className={classes.rowStatic}>{statistic.row[0].data[0]}</div>
+                {
+                    statistic.row[0].data[1]?
+                        <div className={classes.rowStatic}>{statistic.row[0].data[1]}</div>
+                        :
+                        null
+                }
             </div>
         </App>
     )

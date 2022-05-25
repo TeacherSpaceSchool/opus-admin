@@ -548,7 +548,7 @@ const Order = React.memo((props) => {
                                                             }
                                                             label='Срочный заказ'
                                                         />
-                                                        {
+                                                        {/*
                                                             !router.query.executor?
                                                                 <FormControlLabel
                                                                     control={
@@ -562,7 +562,7 @@ const Order = React.memo((props) => {
                                                                 />
                                                                 :
                                                                 null
-                                                        }
+                                                        */}
                                                     </div>
                                                     <TextField
                                                         multiline={true}
