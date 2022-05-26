@@ -39,7 +39,7 @@ const Categories = React.memo((props) => {
     let [list, setList] = useState(data.list);
     let [count, setCount] = useState(data.count);
     const getList = async ()=>{
-        setList((await getCategories({search, skip: 0})));
+        setList((await getCategories({search, skip: 0, compressed: profile.role!=='admin'})));
         setCount(await getCategoriesCount({search}));
         (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
         forceCheck();
@@ -48,7 +48,7 @@ const Categories = React.memo((props) => {
     let paginationWork = useRef(true);
     const checkPagination = async()=>{
         if(paginationWork.current&&!initialRender.current){
-            let addedList = await getCategories({skip: list.length, search})
+            let addedList = await getCategories({skip: list.length, search, compressed: profile.role!=='admin'})
             if(addedList.length>0)
                 setList([...list, ...addedList])
             else
@@ -187,7 +187,7 @@ Categories.getInitialProps = async function(ctx) {
     await initialApp(ctx)
     return {
         data: {
-            list: await getCategories({skip: 0}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            list: await getCategories({skip: 0, compressed: ctx.store.getState().user.profile.role!=='admin'}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
             count: await getCategoriesCount({}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
             searchWords: await getSearchWordsCategories(ctx.req?await getClientGqlSsr(ctx.req):undefined)
         }

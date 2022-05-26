@@ -44,7 +44,7 @@ const Subcategories = React.memo((props) => {
     let [searchTimeOut, setSearchTimeOut] = useState(null);
     const getList = async ()=>{
         if(category) {
-            setList((await getSubcategories({search, skip: 0, category: category._id})));
+            setList((await getSubcategories({search, skip: 0, category: category._id, compressed: profile.role!=='admin'})));
             setCount(await getSubcategoriesCount({search, category: category._id}));
             (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant'});
             forceCheck();
@@ -54,7 +54,7 @@ const Subcategories = React.memo((props) => {
     let paginationWork = useRef(true);
     const checkPagination = async()=>{
         if(paginationWork.current&&!initialRender.current&&category){
-            let addedList = await getSubcategories({search, skip: list.length, category: category._id})
+            let addedList = await getSubcategories({search, skip: list.length, category: category._id, compressed: profile.role!=='admin'})
             if(addedList.length>0)
                 setList([...list, ...addedList])
             else
@@ -207,11 +207,15 @@ const Subcategories = React.memo((props) => {
 
 Subcategories.getInitialProps = async function(ctx) {
     await initialApp(ctx)
+    let list = await getSubcategories({category: ctx.query.id, compressed: ctx.store.getState().user.profile.role!=='admin'}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
+    let category
+    if(list&&list.length)
+        category = await getCategory({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
     return {
         data: {
-            list: await getSubcategories({category: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            list,
             count: await getSubcategoriesCount({category: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
-            category: await getCategory({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            category,
             searchWords: await getSearchWordsSubcategories({category: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
         }
     };

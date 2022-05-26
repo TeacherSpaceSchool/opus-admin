@@ -17,15 +17,15 @@ export const getSearchWordsCategories = async(client)=>{
     }
 }
 
-export const getCategories = async({search, skip}, client)=>{
+export const getCategories = async({search, skip, compressed}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .query({
-                variables: {search, skip},
+                variables: {search, skip, compressed},
                 query: gql`
-                    query ($search: String, $skip: Int) {
-                        categories(search: $search, skip: $skip) {
+                    query ($search: String, $skip: Int, $compressed: Boolean) {
+                        categories(search: $search, skip: $skip, compressed: $compressed) {
                             _id
                             createdAt
                             name
