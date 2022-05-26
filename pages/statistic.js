@@ -149,6 +149,12 @@ const Statistic = React.memo((props) => {
                         :
                         null
                 }
+                {
+                    statistic.row[0].data[2]?
+                        <div className={classes.rowStatic}>{statistic.row[0].data[2]}</div>
+                        :
+                        null
+                }
             </div>
         </App>
     )
