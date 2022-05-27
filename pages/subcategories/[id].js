@@ -111,7 +111,7 @@ const Subcategories = React.memo((props) => {
                     :
                     null
             }
-            <div className={classesPageList.page} style={{paddingTop: 5, ...profile.role==='admin'?{gap: '10px'}:{gap: '5px'}}}>
+            <div className={classesPageList.page} style={{paddingTop: /*5*/72, ...profile.role==='admin'?{gap: '10px'}:{gap: '5px'}}}>
                 {
                     profile.role==='admin'?
                         <CardSubcategory list={list} category={category._id} setList={setList}/>
@@ -216,7 +216,7 @@ Subcategories.getInitialProps = async function(ctx) {
             list,
             count: await getSubcategoriesCount({category: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
             category,
-            searchWords: await getSearchWordsSubcategories({category: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
+            searchWords: []//await getSearchWordsSubcategories({category: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
         }
     };
 };

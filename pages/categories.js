@@ -105,7 +105,7 @@ const Categories = React.memo((props) => {
                     :
                     null
             }
-            <div className={classesPageList.page} style={{paddingTop: 5, ...profile.role==='admin'?{gap: '10px'}:{gap: '5px'}}}>
+            <div className={classesPageList.page} style={{paddingTop: /*5*/72, ...profile.role==='admin'?{gap: '10px'}:{gap: '5px'}}}>
                 {
                     profile.role==='admin'?
                         <CardCategory list={list} setList={setList}/>
@@ -189,7 +189,7 @@ Categories.getInitialProps = async function(ctx) {
         data: {
             list: await getCategories({skip: 0, compressed: ctx.store.getState().user.profile.role!=='admin'}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
             count: await getCategoriesCount({}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
-            searchWords: await getSearchWordsCategories(ctx.req?await getClientGqlSsr(ctx.req):undefined)
+            searchWords: []//await getSearchWordsCategories(ctx.req?await getClientGqlSsr(ctx.req):undefined)
         }
     };
 };
