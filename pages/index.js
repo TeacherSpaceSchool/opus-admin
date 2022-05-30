@@ -233,7 +233,7 @@ Index.getInitialProps = async function(ctx) {
     await initialApp(ctx)
     return {
         data: {
-            ...'admin'===ctx.store.getState().user.profile.role?{subcategories: await getSubcategories({}, ctx.req?await getClientGqlSsr(ctx.req):undefined)}:{},
+            ...'admin'===ctx.store.getState().user.profile.role?{subcategories: await getSubcategories({compressed: true}, ctx.req?await getClientGqlSsr(ctx.req):undefined)}:{},
             ...await getMainSubcategory(ctx.req?await getClientGqlSsr(ctx.req):undefined)
         }
     };

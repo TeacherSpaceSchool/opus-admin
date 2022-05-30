@@ -12,7 +12,6 @@ import CardSubcategory from '../../components/CardSubcategory'
 import Link from 'next/link';
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 import { bindActionCreators } from 'redux'
-import { getCategory } from '../../src/gql/category'
 import { getSubcategories, getSubcategoriesCount, getSearchWordsSubcategories } from '../../src/gql/subcategory'
 import { forceCheck } from 'react-lazyload';
 import { getClientGqlSsr } from '../../src/getClientGQL'
@@ -210,7 +209,7 @@ Subcategories.getInitialProps = async function(ctx) {
     let list = await getSubcategories({category: ctx.query.id, compressed: ctx.store.getState().user.profile.role!=='admin'}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
     let category
     if(list&&list.length)
-        category = await getCategory({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
+        category = list[0].category
     return {
         data: {
             list,

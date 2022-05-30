@@ -36,7 +36,7 @@ const Mailing =  React.memo(
         useEffect(() => {
             (async()=>{
                 if(category) {
-                    setSubcategories(await getSubcategories({category: category._id}))
+                    setSubcategories(await getSubcategories({compressed: true, category: category._id}))
                 }
                 else
                     setSubcategories([])

@@ -89,7 +89,7 @@ const Application = React.memo((props) => {
         else
             (async()=>{
                 if(category) {
-                    setSubcategories(await getSubcategories({category: category._id}))
+                    setSubcategories(await getSubcategories({compressed: true, category: category._id}))
                 }
                 else
                     setSubcategories([])
@@ -596,8 +596,8 @@ Application.getInitialProps = async function(ctx) {
     return {
         data: {
             object: ctx.query.id==='new'? {verification: ctx.query.verification==='1',documents: [], info: '', category: ctx.query.categoryId?{_id: ctx.query.categoryId, name: ctx.query.categoryName}:null, subcategory: ctx.query.subcategoryId?{_id: ctx.query.subcategoryId, name: ctx.query.subcategoryName}:null}:await getApplication({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
-            categories: !ctx.query.category?await getCategories({}, ctx.req?await getClientGqlSsr(ctx.req):undefined):[],
-            subcategories: !ctx.query.subcategory&&ctx.query.id==='new'&&ctx.query.category?await getSubcategories({category: ctx.query.category}, ctx.req?await getClientGqlSsr(ctx.req):undefined):[],
+            categories: !ctx.query.category?await getCategories({compressed: true}, ctx.req?await getClientGqlSsr(ctx.req):undefined):[],
+            subcategories: !ctx.query.subcategory&&ctx.query.id==='new'&&ctx.query.category?await getSubcategories({compressed: true, category: ctx.query.category}, ctx.req?await getClientGqlSsr(ctx.req):undefined):[],
             category,
             subcategory
         }

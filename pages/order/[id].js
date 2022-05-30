@@ -1195,7 +1195,7 @@ Order.getInitialProps = async function(ctx) {
             page,
             object,
             quickTitles,
-            categories: ctx.query.id==='new'&&!ctx.query.executor?await getCategories({}, ctx.req?await getClientGqlSsr(ctx.req):undefined):[],
+            categories: ctx.query.id==='new'&&!ctx.query.executor?await getCategories({compressed: true}, ctx.req?await getClientGqlSsr(ctx.req):undefined):[],
             list: page?await getNotifications({skip: 0, order: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined):[],
             subcategories:
                 ctx.query.id==='new'&&ctx.query.executor?

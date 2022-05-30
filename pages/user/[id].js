@@ -950,7 +950,7 @@ const User = React.memo((props) => {
 User.getInitialProps = async function(ctx) {
     await initialApp(ctx)
     let user = await getUser({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
-    let subcategories = await getSubcategories({}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
+    let subcategories = await getSubcategories({compressed: true}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
     if(user) {
         if(user.reiting&&user.reiting.length) {
             let reiting = 0

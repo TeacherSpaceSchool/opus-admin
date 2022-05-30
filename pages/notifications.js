@@ -220,7 +220,7 @@ const Notifications = React.memo((props) => {
                             className={classesCategory.cardAO}
                             startIcon={<SendIcon />}
                             onClick={async()=>{
-                                const categories = await getCategories({})
+                                const categories = await getCategories({compressed: true})
                                 setMiniDialog('Рассылка', <Mailing categories={categories}/>)
                                 showMiniDialog(true)
                             }}

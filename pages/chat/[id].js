@@ -31,7 +31,6 @@ const Chat = React.memo((props) => {
     let [who] = useState(data.chat?router.query.user?router.query.user===data.chat.part1._id?data.chat.part2:data.chat.part1:profile._id===data.chat.part1._id?data.chat.part2:data.chat.part1:{});
     let [message, setMessage] = useState('');
     let [list, setList] = useState(data.list);
-    let listLength = useRef(list?list.length:0);
     let paginationWork = useRef(true)
     let tick = useRef(true);
     const sendTextMessage = async()=>{
@@ -70,10 +69,10 @@ const Chat = React.memo((props) => {
                     let scrolledTop = listMessageChatRef.current.scrollHeight - (listMessageChatRef.current.offsetHeight - listMessageChatRef.current.scrollTop)
                     if (scrolledTop<=1) {
                         await showLoad(true)
-                        let addedList = await getMessages({skip: listLength.current, chat: router.query.id})
+                        let addedList = await getMessages({skip: list.length, chat: router.query.id})
                         if (addedList.length > 0) {
-                            setList([...list, ...addedList])
-                            listLength.current += addedList.length
+                            list = [...list, ...addedList]
+                            setList(list)
                         }
                         else
                             paginationWork.current = false

@@ -137,7 +137,7 @@ Users.getInitialProps = async function(ctx) {
             ctx.res.end()
         } else
             Router.push('/')
-    let subcategories = await getSubcategories({}, ctx.req?await getClientGqlSsr(ctx.req):undefined), subcategoriesById = {}
+    let subcategories = await getSubcategories({compressed: true}, ctx.req?await getClientGqlSsr(ctx.req):undefined), subcategoriesById = {}
     for(let i=0; i<subcategories.length; i++) {
         subcategoriesById[subcategories[i]._id] = subcategories[i].name
     }
@@ -148,7 +148,7 @@ Users.getInitialProps = async function(ctx) {
         data: {
             limit,
             subcategoriesById,
-            categories: await getCategories({}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            categories: await getCategories({compressed: true}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
             list: await getUsers({skip: 0, limit}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
             count: await getUsersCount({}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
         }
