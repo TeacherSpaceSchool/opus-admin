@@ -113,6 +113,21 @@ export const mailingMessage = async(element)=>{
     }
 }
 
+export const mailingMessageCount = async(element)=>{
+    try{
+        const client = new SingletonApolloClient().getClient()
+        let res = await client.query({
+            variables: element,
+            query : gql`
+                    query ($id: ID, $typeMailing: String!) {
+                        mailingMessageCount(id: $id, typeMailing: $typeMailing) 
+                    }`})
+        return res.data.mailingMessageCount
+    } catch(err){
+        console.error(err)
+    }
+}
+
 export const readChat = async(chat)=>{
     try{
         const client = new SingletonApolloClient().getClient()

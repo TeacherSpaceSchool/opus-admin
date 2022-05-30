@@ -12,7 +12,7 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import {mailingMessage} from '../../src/gql/chat'
+import {mailingMessage, mailingMessageCount} from '../../src/gql/chat'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { getSubcategories } from '../../src/gql/subcategory'
 import Router from 'next/router'
@@ -32,6 +32,7 @@ const Mailing =  React.memo(
         let handleTypeMailing = event => setTypeMailing(event.target.value)
         let imageRef = useRef(null);
         let [subcategories, setSubcategories] = useState([]);
+        let [count, setCount] = useState(0);
         useEffect(() => {
             (async()=>{
                 if(category) {
@@ -45,6 +46,14 @@ const Mailing =  React.memo(
         useEffect(() => {
             setCategory(null)
         }, [typeMailing]);
+        useEffect(() => {
+            (async()=>{
+                setCount(await mailingMessageCount({
+                    id: subcategory?subcategory._id:category?category._id:null,
+                    typeMailing
+                }))
+            })()
+        }, [typeMailing, category, subcategory]);
         let handleChangeImage = (async (event) => {
             if(event.target.files[0]&&event.target.files[0].size / 1024 / 1024 < 50) {
                 let res = await mailingMessage({
@@ -63,8 +72,24 @@ const Mailing =  React.memo(
         })
         return (
             <div className={classes.main}>
+                <div className={classes.row}>
+                    <div className={classes.nameField}>
+                        Получатели в чатах:&nbsp;
+                    </div>
+                    <div className={classes.value}>
+                        {count[0]}
+                    </div>
+                </div>
+                <div className={classes.row}>
+                    <div className={classes.nameField}>
+                        Получатели в СМС:&nbsp;
+                    </div>
+                    <div className={classes.value}>
+                        {count[1]}
+                    </div>
+                </div>
                 <FormControl className={classes.textField} style={{width: width}}>
-                    <InputLabel>Город</InputLabel>
+                    <InputLabel>Тип</InputLabel>
                     <Select value={typeMailing} onChange={handleTypeMailing}
                             inputProps={{
                                 'aria-label': 'description'
@@ -129,6 +154,23 @@ const Mailing =  React.memo(
                     <Button variant="contained" color="primary" onClick={async()=>{
                         if(message&&(!['Категории', 'Подкатегории'].includes(typeMailing)||subcategory&&typeMailing==='Подкатегории'||category&&typeMailing==='Категории')) {
                             let res = await mailingMessage({
+                                type: 'sms',
+                                text: message,
+                                id: typeMailing==='Подкатегории'?subcategory._id:category?category._id:null,
+                                typeMailing
+                            })
+                            if(res==='OK')
+                                showSnackBar('СМС отправлено', 'success')
+                            showMiniDialog(false);
+                        }
+                        else
+                            showSnackBar('Заполните все поля')
+                    }} className={classes.button}>
+                        СМС
+                    </Button>
+                    <Button variant="contained" color="primary" onClick={async()=>{
+                        if(message&&(!['Категории', 'Подкатегории'].includes(typeMailing)||subcategory&&typeMailing==='Подкатегории'||category&&typeMailing==='Категории')) {
+                            let res = await mailingMessage({
                                 type: 'text',
                                 text: message,
                                 id: typeMailing==='Подкатегории'?subcategory._id:category?category._id:null,
@@ -141,7 +183,7 @@ const Mailing =  React.memo(
                         else
                             showSnackBar('Заполните все поля')
                     }} className={classes.button}>
-                        Отправить текст
+                        Чат
                     </Button>
                     <Button variant="contained" color="primary" onClick={async()=>{
                         if(!['Категории', 'Подкатегории'].includes(typeMailing)||subcategory&&typeMailing==='Подкатегории'||category&&typeMailing==='Категории') {
@@ -150,7 +192,7 @@ const Mailing =  React.memo(
                         else
                             showSnackBar('Заполните все поля')
                     }} className={classes.button}>
-                        Отправить файл
+                        Изображение
                     </Button>
                     <Button variant="contained" color="secondary" onClick={()=>{showMiniDialog(false);}} className={classes.button}>
                         Закрыть
