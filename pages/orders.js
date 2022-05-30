@@ -237,62 +237,6 @@ const Orders = React.memo((props) => {
                                     :
                                     null
                         }
-                        {
-                            profile.role==='admin'?
-                                <div className={classesOrder.divChip}>
-                                    <Chip
-                                        avatar={data.count[0]!=undefined?<Avatar>{data.count[0]}</Avatar>:null}
-                                        className={classesOrder.chip}
-                                        onClick={()=>{
-                                            setFilter('')
-                                        }}
-                                        color={!filter?'primary':'default'}
-                                        label='Все'
-                                    />
-                                    <Chip
-                                        avatar={data.count[1]!=undefined?<Avatar>{data.count[1]}</Avatar>:null}
-                                        onClick={()=>{
-                                            if(filter!=='активный')
-                                                setFilter('активный')
-                                        }}
-                                        color={filter==='активный'?'primary':'default'}
-                                        className={classesOrder.chip}
-                                        label='активный'
-                                    />
-                                    <Chip
-                                        color={filter==='принят'?'primary':'default'}
-                                        avatar={data.count[2]!=undefined?<Avatar>{data.count[2]}</Avatar>:null}
-                                        onClick={()=>{
-                                            if(filter!=='принят')
-                                                setFilter('принят')
-                                        }}
-                                        className={classesOrder.chip}
-                                        label='принят'
-                                    />
-                                    <Chip
-                                        color={filter==='выполнен'?'primary':'default'}
-                                        avatar={data.count[3]!=undefined?<Avatar>{data.count[3]}</Avatar>:null}
-                                        onClick={()=>{
-                                            if(filter!=='выполнен')
-                                                setFilter('выполнен')
-                                        }}
-                                        className={classesOrder.chip}
-                                        label='выполнен'
-                                    />
-                                    <Chip
-                                        color={filter==='отмена'?'primary':'default'}
-                                        avatar={data.count[4]!=undefined?<Avatar>{data.count[4]}</Avatar>:null}
-                                        onClick={()=>{
-                                            if(filter!=='отмена')
-                                                setFilter('отмена')
-                                        }}
-                                        className={classesOrder.chip}
-                                        label='отмена'
-                                    />
-                                </div>
-                                :
-                                null
-                        }
                     </div>
                     :
                     null
@@ -381,7 +325,7 @@ Orders.getInitialProps = async function(ctx) {
         data: {
             subcategoriesById,
             list: await getOrders({skip: 0, ...my?{my, status: ctx.store.getState().app.filter}:{}, user: ctx.query.user, limit}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
-            count: /*ctx.store.getState().user.profile.role==='client'||ctx.query.user?*/await getOrdersCount(ctx.query.user, ctx.req?await getClientGqlSsr(ctx.req):undefined)/*:[]*/,
+            count: ctx.store.getState().user.profile.role==='client'||ctx.query.user?await getOrdersCount(ctx.query.user, ctx.req?await getClientGqlSsr(ctx.req):undefined):[],
             limit
         }
     };
