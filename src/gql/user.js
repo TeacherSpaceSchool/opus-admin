@@ -44,15 +44,15 @@ export const getUser = async({_id}, client)=>{
     }
 }
 
-export const getUsers = async({favorite, search, employment, category, subcategory, skip, status, limit}, client)=>{
+export const getUsers = async({favorite, search, employment, dateStart, dateEnd, subcategory, category, skip, status, limit}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .query({
-                variables: {favorite, search, category, employment, subcategory, skip, status, limit},
+                variables: {favorite, search, dateStart, dateEnd, subcategory, category, employment, skip, status, limit},
                 query: gql`
-                    query ($favorite: Boolean, $search: String, $employment: Boolean, $category: ID, $subcategory: ID, $skip: Int!, $status: String, $limit: Int) {
-                        users(favorite: $favorite, search: $search, employment: $employment, category: $category, subcategory: $subcategory, skip: $skip, status: $status, limit: $limit) {
+                    query ($dateStart: Date, $dateEnd: Date, $subcategory: ID, $favorite: Boolean, $search: String, $employment: Boolean, $category: ID, $skip: Int!, $status: String, $limit: Int) {
+                        users(dateStart: $dateStart, dateEnd: $dateEnd, subcategory: $subcategory, favorite: $favorite, search: $search, employment: $employment, category: $category, skip: $skip, status: $status, limit: $limit) {
                             _id
                             createdAt
                             updatedAt
@@ -84,15 +84,15 @@ export const getUsers = async({favorite, search, employment, category, subcatego
     }
 }
 
-export const getUsersCount = async({favorite, search, employment, category, subcategory, status}, client)=>{
+export const getUsersCount = async({favorite, search, employment, dateStart, dateEnd, subcategory, category, status}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .query({
-                variables: {favorite, search, category, employment, subcategory, status},
+                variables: {favorite, search, dateStart, dateEnd, subcategory, category, employment, status},
                 query: gql`
-                    query ($favorite: Boolean, $search: String, $employment: Boolean, $category: ID, $subcategory: ID, $status: String) {
-                        usersCount(favorite: $favorite, search: $search, employment: $employment, category: $category, subcategory: $subcategory, status: $status) 
+                    query ($dateStart: Date, $dateEnd: Date, $subcategory: ID, $favorite: Boolean, $search: String, $employment: Boolean, $category: ID, $status: String) {
+                        usersCount(dateStart: $dateStart, dateEnd: $dateEnd, subcategory: $subcategory, favorite: $favorite, search: $search, employment: $employment, category: $category, status: $status) 
                     }`,
             })
         return res.data.usersCount

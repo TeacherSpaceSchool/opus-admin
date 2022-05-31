@@ -16,6 +16,7 @@ import {mailingMessage, mailingMessageCount} from '../../src/gql/chat'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { getSubcategories } from '../../src/gql/subcategory'
 import Router from 'next/router'
+import Confirmation from './Confirmation'
 const typeMailings = ['Все', 'Заказчики', 'Исполнители', 'Категории', 'Подкатегории']
 
 const Mailing =  React.memo(
@@ -24,7 +25,7 @@ const Mailing =  React.memo(
         let [message, setMessage] = useState('');
         const { isMobileApp } = props.app;
         const { showSnackBar } = props.snackbarActions;
-        const { showMiniDialog } = props.mini_dialogActions;
+        const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
         const width = isMobileApp? (window.innerWidth-112) : 500
         const [typeMailing, setTypeMailing] = useState('Все');
         let [category, setCategory] = useState(null);
@@ -56,16 +57,18 @@ const Mailing =  React.memo(
         }, [typeMailing, category, subcategory]);
         let handleChangeImage = (async (event) => {
             if(event.target.files[0]&&event.target.files[0].size / 1024 / 1024 < 50) {
-                let res = await mailingMessage({
-                    type: 'image',
-                    file: event.target.files[0],
-                    id: typeMailing==='Подкатегории'?subcategory._id:category?category._id:null,
-                    typeMailing
-                })
-                if(res==='OK')
-                    Router.reload()
-                showMiniDialog(false);
-
+                let file = event.target.files[0]
+                const action = async() => {
+                    let res = await mailingMessage({
+                        type: 'image',
+                        file,
+                        id: typeMailing==='Подкатегории'?subcategory._id:category?category._id:null,
+                        typeMailing
+                    })
+                    if(res==='OK')
+                        Router.reload()
+                }
+                setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
             } else {
                 showSnackBar('Файл слишком большой')
             }
@@ -153,15 +156,17 @@ const Mailing =  React.memo(
                 <div>
                     <Button variant="contained" color="primary" onClick={async()=>{
                         if(message&&(!['Категории', 'Подкатегории'].includes(typeMailing)||subcategory&&typeMailing==='Подкатегории'||category&&typeMailing==='Категории')) {
-                            let res = await mailingMessage({
-                                type: 'sms',
-                                text: message,
-                                id: typeMailing==='Подкатегории'?subcategory._id:category?category._id:null,
-                                typeMailing
-                            })
-                            if(res==='OK')
-                                showSnackBar('СМС отправлено', 'success')
-                            showMiniDialog(false);
+                            const action = async() => {
+                                let res = await mailingMessage({
+                                    type: 'sms',
+                                    text: message,
+                                    id: typeMailing==='Подкатегории'?subcategory._id:category?category._id:null,
+                                    typeMailing
+                                })
+                                if(res==='OK')
+                                    showSnackBar('СМС отправлено', 'success')
+                            }
+                            setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                         }
                         else
                             showSnackBar('Заполните все поля')
@@ -170,15 +175,17 @@ const Mailing =  React.memo(
                     </Button>
                     <Button variant="contained" color="primary" onClick={async()=>{
                         if(message&&(!['Категории', 'Подкатегории'].includes(typeMailing)||subcategory&&typeMailing==='Подкатегории'||category&&typeMailing==='Категории')) {
-                            let res = await mailingMessage({
-                                type: 'text',
-                                text: message,
-                                id: typeMailing==='Подкатегории'?subcategory._id:category?category._id:null,
-                                typeMailing
-                            })
-                            if(res==='OK')
-                                Router.reload()
-                            showMiniDialog(false);
+                            const action = async() => {
+                                let res = await mailingMessage({
+                                    type: 'text',
+                                    text: message,
+                                    id: typeMailing==='Подкатегории'?subcategory._id:category?category._id:null,
+                                    typeMailing
+                                })
+                                if(res==='OK')
+                                    Router.reload()
+                            }
+                            setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                         }
                         else
                             showSnackBar('Заполните все поля')

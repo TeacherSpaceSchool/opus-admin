@@ -18,6 +18,11 @@ import styleSubcategory from '../src/styleMUI/other/subcategory'
 import Avatar from '@material-ui/core/Avatar';
 import { getSubcategories } from '../src/gql/subcategory'
 import { getCity } from '../src/lib'
+import styleCategory from '../src/styleMUI/other/category'
+import { bindActionCreators } from 'redux'
+import * as mini_dialogActions from '../redux/actions/mini_dialog'
+import Filter from '../components/dialog/Filter'
+import Button from '@material-ui/core/Button';
 const height = 230
 
 const Users = React.memo((props) => {
@@ -25,15 +30,29 @@ const Users = React.memo((props) => {
     const { data } = props;
     const { search, isMobileApp } = props.app;
     let [list, setList] = useState(data.list);
+    const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
+    const classesCategory = styleCategory();
     const classesSubcategory = styleSubcategory();
     let [count, setCount] = useState(data.count);
     let [category, setCategory] = useState(null);
+    const [geo, setGeo] = useState();
+    let [dateStart, setDateStart] = useState(null);
+    let [dateEnd, setDateEnd] = useState(null);
+    let [subcategory, setSubcategory] = useState(undefined);
     const changeCategory = useRef(false);
     const initialRender = useRef(true);
     let [searchTimeOut, setSearchTimeOut] = useState(null);
     const getList = async ()=>{
-        setList(await getUsers({search, skip: 0, ...category?{category: category._id}:{}}));
-        setCount(await getUsersCount({search, ...category?{category: category._id}:{}}));
+        setList(await getUsers({search, skip: 0,
+            ...category?{category: category._id}:{},
+            ...subcategory?{subcategory: subcategory._id}:{},
+            ...dateStart?{dateStart}:{},
+            ...dateEnd?{dateEnd}:{}}));
+        setCount(await getUsersCount({search,
+            ...category?{category: category._id}:{},
+            ...subcategory?{subcategory: subcategory._id}:{},
+            ...dateStart?{dateStart}:{},
+            ...dateEnd?{dateEnd}:{},}));
         (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant'});
         forceCheck();
         paginationWork.current = true
@@ -41,7 +60,11 @@ const Users = React.memo((props) => {
     let paginationWork = useRef(true)
     const checkPagination = async()=>{
         if(paginationWork.current&&!initialRender.current){
-            let addedList = await getUsers({search, skip: list.length, ...category?{category: category._id}:{}})
+            let addedList = await getUsers({search, skip: list.length,
+                ...category?{category: category._id}:{},
+                ...subcategory?{subcategory: subcategory._id}:{},
+                ...dateStart?{dateStart}:{},
+                ...dateEnd?{dateEnd}:{},})
             if(addedList.length>0)
                 setList([...list, ...addedList])
             else
@@ -55,7 +78,7 @@ const Users = React.memo((props) => {
                 changeCategory.current = false
             }
         })()
-    },[category])
+    },[category, subcategory, dateStart, dateEnd])
     useEffect(()=>{
         (async()=>{
             if(initialRender.current) {
@@ -70,7 +93,6 @@ const Users = React.memo((props) => {
             }
         })()
     },[search])
-    const [geo, setGeo] = useState();
     return (
         <App pageName='Пользователи' searchShow paginationWork={paginationWork} checkPagination={checkPagination} setGeo={setGeo}>
             <Head>
@@ -83,32 +105,7 @@ const Users = React.memo((props) => {
                 <meta property='og:url' content={`${urlMain}/users`} />
                 <link rel='canonical' href={`${urlMain}/users`}/>
             </Head>
-            <div className={classesPageList.page} style={{paddingTop: isMobileApp?110:130}}>
-                <div className={classesSubcategory.divChip} style={isMobileApp?{'&::-webkit-scrollbar': {display: 'none'}}:{}}>
-                      <Chip
-                        className={classesSubcategory.chip}
-                        onClick={()=>{
-                            if(!changeCategory.current&&category) {
-                                changeCategory.current = true
-                                setCategory(null)
-                            }
-                        }}
-                        color={!category?'primary':'default'}
-                        label='Все'
-                    />
-                    {process.browser&&data.categories?data.categories.map((element, idx)=><Chip
-                            key={`categorie${idx}`}
-                            onClick={()=>{
-                                if(!changeCategory.current) {
-                                    changeCategory.current = true;
-                                    setCategory(element);
-                                }
-                            }}
-                            color={category&&category.name===element.name?'primary':'default'}
-                            className={classesSubcategory.chip}
-                            label={element.name}
-                        />):null}
-                </div>
+            <div className={classesPageList.page} style={{paddingTop: 72}}>
                 {
                     list?list.map((element, idx)=> {
                         if(idx<=data.limit)
@@ -122,6 +119,28 @@ const Users = React.memo((props) => {
                 <div className='count'>
                     {`Всего: ${count}`}
                 </div>
+                <Button
+                    onClick={async ()=>{
+                        setMiniDialog('Фильтр', <Filter
+                            categories={data.categories}
+                            type='Заказы'
+                            category={category}
+                            setCategory={setCategory}
+                            subcategory={subcategory}
+                            setSubcategory={setSubcategory}
+                            dateStart={dateStart}
+                            setDateStart={setDateStart}
+                            dateEnd={dateEnd}
+                            setDateEnd={setDateEnd}
+                        />)
+                        showMiniDialog(true)
+                    }}
+                    variant='contained'
+                    color='primary'
+                    className={classesCategory.cardAO}
+                >
+                    Фильтр
+                </Button>
             </div>
         </App>
     )
@@ -162,4 +181,10 @@ function mapStateToProps (state) {
     }
 }
 
-export default connect(mapStateToProps)(Users);
+function mapDispatchToProps(dispatch) {
+    return {
+        mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch),
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Users);
