@@ -85,15 +85,15 @@ export const getNearOrders = async(geo)=>{
     }
 }
 
-export const getOrders = async({skip, my, user, limit, status, subcategory}, client)=>{
+export const getOrders = async({dateStart, dateEnd, skip, my, user, limit, status, subcategory, category}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .query({
-                variables: {skip, my, user, limit, status, subcategory},
+                variables: {dateStart, dateEnd, skip, my, user, limit, status, subcategory, category},
                 query: gql`
-                    query ($skip: Int!, $my: Boolean, $user: ID, $limit: Int, $status: String, $subcategory: ID) {
-                        orders(skip: $skip, my: $my, user: $user, limit: $limit, status: $status, subcategory: $subcategory) {
+                    query ($dateStart: Date, $dateEnd: Date, $skip: Int!, $my: Boolean, $user: ID, $limit: Int, $status: String, $subcategory: ID, $category: ID) {
+                        orders(dateStart: $dateStart, dateEnd: $dateEnd, skip: $skip, my: $my, user: $user, limit: $limit, status: $status, subcategory: $subcategory, category: $category) {
                             _id
                             createdAt
                             responsedUsers
@@ -125,15 +125,15 @@ export const getOrders = async({skip, my, user, limit, status, subcategory}, cli
     }
 }
 
-export const getOrdersCount = async(user, client)=>{
+export const getOrdersCount = async({dateStart, dateEnd, user, subcategory, category}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .query({
-                variables: {user},
+                variables: {dateStart, dateEnd, user, subcategory, category},
                 query: gql`
-                    query($user: ID) {
-                        ordersCount(user: $user)
+                    query($dateStart: Date, $dateEnd: Date, $user: ID, $subcategory: ID, $category: ID) {
+                        ordersCount(dateStart: $dateStart, dateEnd: $dateEnd, user: $user, subcategory: $subcategory, category: $category)
                     }`,
             })
         return res.data.ordersCount

@@ -13,6 +13,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { getOrders, getNearOrders, getOrdersCount } from '../src/gql/order'
 import Sign from '../components/dialog/Sign'
+import Filter from '../components/dialog/Filter'
 import { getClientGqlSsr } from '../src/getClientGQL'
 import styleCategory from '../src/styleMUI/other/category'
 import styleOrder from '../src/styleMUI/other/order'
@@ -29,6 +30,7 @@ import * as appActions from '../redux/actions/app'
 import * as mini_dialogActions from '../redux/actions/mini_dialog'
 import Router from 'next/router'
 import { getSubcategories } from '../src/gql/subcategory'
+import { getCategories } from '../src/gql/category'
 const height = 147
 
 const Orders = React.memo((props) => {
@@ -40,8 +42,12 @@ const Orders = React.memo((props) => {
     const { profile, authenticated } = props.user;
     const { filter } = props.app;
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
+    let [dateStart, setDateStart] = useState(null);
+    let [dateEnd, setDateEnd] = useState(null);
     let [list, setList] = useState(data.list);
+    let [count, setCount] = useState(data.count);
     let [subcategory, setSubcategory] = useState(undefined);
+    let [category, setCategory] = useState(undefined);
     const { setFilter, showLoad } = props.appActions;
     const initialRender = useRef(true);
     const [page, setPage] = useState(profile.specializations&&profile.specializations.length?router.query.page?checkInt(router.query.page):1:0);
@@ -65,9 +71,27 @@ const Orders = React.memo((props) => {
         }
         else {
             setList(await getOrders({
-                skip: 0, ...page === 0 ? {my: true, status: filter} : {subcategory},
+                skip: 0,
+                ...page === 0 ? {my: true, status: filter} : {subcategory},
+                ...profile.role==='admin'?
+                    {
+                        ...category?{category: category._id}:{},
+                        ...subcategory?{subcategory: subcategory._id}:{},
+                        ...dateStart?{dateStart}:{},
+                        ...dateEnd?{dateEnd}:{},
+                    }
+                    :
+                    {},
                 user: router.query.user,
             }));
+            if(profile.role==='admin')
+                setCount(await getOrdersCount({
+                    ...category?{category: category._id}:{},
+                    ...subcategory?{subcategory: subcategory._id}:{},
+                    ...dateStart?{dateStart}:{},
+                    ...dateEnd?{dateEnd}:{},
+                    user: router.query.user,
+                }))
         }
         (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
         forceCheck()
@@ -83,7 +107,20 @@ const Orders = React.memo((props) => {
     let paginationWork = useRef(true);
     const checkPagination = async()=>{
         if(paginationWork.current&&!initialRender.current){
-            let addedList = await getOrders({skip: list.length, ...page===0?{ my: true, status: filter}:{subcategory}, user: router.query.user})
+            let addedList = await getOrders({
+                skip: list.length,
+                ...profile.role==='admin'?
+                    {
+                        ...category?{category: category._id}:{},
+                        ...subcategory?{subcategory: subcategory._id}:{},
+                        ...dateStart?{dateStart}:{},
+                        ...dateEnd?{dateEnd}:{},
+                    }
+                    :
+                    {},
+                ...page===0?{ my: true, status: filter}:{subcategory},
+                user: router.query.user
+            })
             if(addedList.length>0)
                 setList([...list, ...addedList])
             else
@@ -98,7 +135,7 @@ const Orders = React.memo((props) => {
                 getList()
             }
         })()
-    },[page, filter, subcategory])
+    },[page, filter, subcategory, category, dateStart, dateEnd])
     const handlerSwipe = useSwipeable({
         onSwipedLeft: (eventData) => {
             if(authenticated&&profile.role==='client'&&!eventData.event.target.className.includes('MuiChip')){
@@ -159,7 +196,7 @@ const Orders = React.memo((props) => {
                             page===0?
                                 <div className={classesOrder.divChip}>
                                     <Chip
-                                        avatar={data.count[0]!=undefined?<Avatar>{data.count[0]}</Avatar>:null}
+                                        avatar={count[0]!=undefined?<Avatar>{count[0]}</Avatar>:null}
                                         className={classesOrder.chip}
                                         onClick={()=>{
                                             setFilter('')
@@ -168,7 +205,7 @@ const Orders = React.memo((props) => {
                                         label='Все'
                                     />
                                     <Chip
-                                        avatar={data.count[1]!=undefined?<Avatar>{data.count[1]}</Avatar>:null}
+                                        avatar={count[1]!=undefined?<Avatar>{count[1]}</Avatar>:null}
                                         onClick={()=>{
                                             if(filter!=='активный')
                                                 setFilter('активный')
@@ -179,7 +216,7 @@ const Orders = React.memo((props) => {
                                     />
                                     <Chip
                                         color={filter==='принят'?'primary':'default'}
-                                        avatar={data.count[2]!=undefined?<Avatar>{data.count[2]}</Avatar>:null}
+                                        avatar={count[2]!=undefined?<Avatar>{count[2]}</Avatar>:null}
                                         onClick={()=>{
                                             if(filter!=='принят')
                                                 setFilter('принят')
@@ -189,7 +226,7 @@ const Orders = React.memo((props) => {
                                     />
                                     <Chip
                                         color={filter==='выполнен'?'primary':'default'}
-                                        avatar={data.count[3]!=undefined?<Avatar>{data.count[3]}</Avatar>:null}
+                                        avatar={count[3]!=undefined?<Avatar>{count[3]}</Avatar>:null}
                                         onClick={()=>{
                                             if(filter!=='выполнен')
                                                 setFilter('выполнен')
@@ -199,7 +236,7 @@ const Orders = React.memo((props) => {
                                     />
                                     <Chip
                                         color={filter==='отмена'?'primary':'default'}
-                                        avatar={data.count[4]!=undefined?<Avatar>{data.count[4]}</Avatar>:null}
+                                        avatar={count[4]!=undefined?<Avatar>{count[4]}</Avatar>:null}
                                         onClick={()=>{
                                             if(filter!=='отмена')
                                                 setFilter('отмена')
@@ -297,7 +334,31 @@ const Orders = React.memo((props) => {
                                 Стать исполнителем
                             </Button>
                             :
-                            null
+                            profile.role==='admin'&&!router.query.user?
+                                <Button
+                                    onClick={async ()=>{
+                                        setMiniDialog('Фильтр', <Filter
+                                            categories={data.categories}
+                                            type='Заказы'
+                                            category={category}
+                                            setCategory={setCategory}
+                                            subcategory={subcategory}
+                                            setSubcategory={setSubcategory}
+                                            dateStart={dateStart}
+                                            setDateStart={setDateStart}
+                                            dateEnd={dateEnd}
+                                            setDateEnd={setDateEnd}
+                                        />)
+                                        showMiniDialog(true)
+                                    }}
+                                    variant='contained'
+                                    color='primary'
+                                    className={classesCategory.cardAO}
+                                >
+                                    Фильтр
+                                </Button>
+                                :
+                                null
             }
         </App>
     )
@@ -323,9 +384,10 @@ Orders.getInitialProps = async function(ctx) {
     }
     return {
         data: {
+            ...'admin'===ctx.store.getState().user.profile.role?{categories: await getCategories({compressed: true}, ctx.req?await getClientGqlSsr(ctx.req):undefined)}:{},
             subcategoriesById,
             list: await getOrders({skip: 0, ...my?{my, status: ctx.store.getState().app.filter}:{}, user: ctx.query.user, limit}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
-            count: ctx.store.getState().user.profile.role==='client'||ctx.query.user?await getOrdersCount(ctx.query.user, ctx.req?await getClientGqlSsr(ctx.req):undefined):[],
+            count: /*ctx.store.getState().user.profile.role==='client'||ctx.query.user?*/await getOrdersCount({user: ctx.query.user}, ctx.req?await getClientGqlSsr(ctx.req):undefined)/*:[]*/,
             limit
         }
     };

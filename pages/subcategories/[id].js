@@ -53,7 +53,6 @@ const Subcategories = React.memo((props) => {
     let paginationWork = useRef(true);
     const checkPagination = async()=>{
         if(paginationWork.current&&!initialRender.current&&category){
-            console.log(1)
             let addedList = await getSubcategories({search, skip: list.length, category: category._id, compressed: profile.role!=='admin'})
             if(addedList.length>0)
                 setList([...list, ...addedList])
