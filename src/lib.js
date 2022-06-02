@@ -114,8 +114,8 @@ export const inputInt = (str) => {
 export const inputPhoneLogin = (str) => {
     if(!str.length)
         return ''
-    let oldStr = str.substring(0, str.length-1)
     let newChr = str[str.length-1]
+    let oldStr = str.substring(0, str.length-1)
     if(!['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'].includes(newChr)||str.length>9)
         return oldStr
     return str
